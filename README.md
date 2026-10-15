@@ -1,6 +1,8 @@
 # TENSIL — boutique de démonstration
 
-> **Projet de démonstration.** TENSIL est une marque fictive : aucun produit n'est vendu, aucun paiement n'est demandé, aucune donnée saisie ne quitte le navigateur. Statut : **réalisé en local, non publié**.
+> **Projet de démonstration.** TENSIL est une marque fictive : aucun produit n'est vendu, aucun paiement n'est demandé, aucune donnée saisie ne quitte le navigateur.
+>
+> **Démo en ligne : https://tensil-store.vercel.app** (Vercel, offre Hobby gratuite).
 
 ![Page produit, vue 3D](docs/screenshots/01-produit-desktop.webp)
 
@@ -49,6 +51,7 @@ npm run preview      # sert dist/
 npm test             # tests unitaires
 npx playwright install chromium   # une fois
 npm run test:e2e     # E2E + axe (lancer `npm run preview` avant)
+BASE_URL=https://tensil-store.vercel.app npm run test:e2e   # mêmes tests sur le site en ligne
 ```
 
 ### Régénérer les assets 3D (optionnel)
@@ -91,26 +94,28 @@ Voir [docs/CREDITS.md](docs/CREDITS.md). Aucune image, texture ou police tierce 
 | Lighthouse mobile, page produit | Performance 99, Accessibilité 100, Bonnes pratiques 100, SEO 100 | Lighthouse 12, aperçu local, throttling simulé ; LCP 1,9 s, TBT 0 ms, CLS 0,006, 161 Kio transférés |
 | GLB | `gltf-transform validate` : 0 erreur | rendu de contrôle des 4 angles dans Blender |
 | Contrôle visuel | desktop 1440 px et mobile 390 px | Chrome |
+| Production (Vercel) | 7 routes OK (dont 404), en-têtes de sécurité présents, vue 3D fonctionnelle sous CSP stricte sans erreur console | 2026-10-16 |
+| E2E + axe sur la production | 26/26 ; axe 30/30 sur 3 répétitions | `BASE_URL=https://tensil-store.vercel.app` |
 
-**Non vérifié** : Firefox et Safari, appareils physiques, lecteur d'écran (test manuel), Lighthouse sur les pages autres que `/`, comportement en production (en-têtes HTTP, CDN).
+**Non vérifié** : Firefox et Safari, appareils physiques, lecteur d'écran (test manuel), Lighthouse sur les pages autres que `/` et sur l'URL de production.
 
 ## 9. Limites connues
 - Prix, livraison, retours et commandes **fictifs**.
 - La teinte de la 3D temps réel diffère légèrement des rendus Cycles (moteurs et éclairages différents).
 - L'ampoule n'est pas allumée dans la vue 3D (l'intensité d'émission n'est pas animée en glTF).
 - La 3D charge environ 212 Ko de JavaScript gzip + 195 Kio de GLB : raisonnable sur ordinateur, plus lourd sur mobile d'entrée de gamme (d'où le chargement à la demande).
-- L'image Open Graph et l'URL canonique ne sont absolues qu'une fois `SITE_URL` défini (aucune publication pour l'instant).
-- Pas de politique de sécurité (CSP) ni d'en-têtes HTTP : ils se configurent chez l'hébergeur au moment de la publication.
+- La CSP autorise `'unsafe-inline'` pour les styles (attributs `style` des pastilles de coloris) ; les scripts restent limités à `'self'` (+ `'wasm-unsafe-eval'` pour le décodeur Meshopt).
+- L'offre Hobby de Vercel est réservée à un usage personnel non commercial : le site doit rester une démo sans vente.
 - Le film MP4 (2,6 Mo) n'est chargé que sur clic.
 
 ## 10. Coûts
 **0 € engagé.** Logiciels libres, rendus sur le PC personnel. Aucun frais futur nécessaire. Détail : [docs/COSTS.md](docs/COSTS.md).
 
-## Publication (non réalisée, nécessite ton accord)
-1. Choisir l'hébergeur. Recommandé : **Cloudflare Pages** (offre gratuite, 500 builds/mois, 25 Mio max par fichier, [limites](https://developers.cloudflare.com/pages/platform/limits/)). Les [conditions de GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits) excluent l'hébergement d'une activité e-commerce : défendable pour une démo sans transaction, mais ambigu.
-2. Créer le compte (par toi), relier ce dépôt : commande `npm run build`, dossier `dist`, variable `SITE_URL=https://<domaine>`.
-3. Ajouter un fichier `public/_headers` (CSP, `X-Content-Type-Options`, `Referrer-Policy`) et vérifier avec les tests E2E sur l'URL publiée.
-4. Ne pas utiliser `elie-gordo.fr` sans décision explicite.
+## Publication
+- **Hébergeur** : Vercel, projet `tensil-store`, offre Hobby (gratuite, [usage personnel non commercial](https://vercel.com/docs/limits/fair-use-guidelines#commercial-usage), 100 Go de transfert/mois inclus). Déployé le 2026-10-16.
+- **Déploiement continu** : le dépôt GitHub est relié ; chaque push sur `main` redéploie la production.
+- **Configuration** : `vercel.json` (build `npm run build`, sortie `dist`, URL sans `.html`, CSP et en-têtes de sécurité, cache long sur `/_astro/*`) ; variable d'environnement `SITE_URL=https://tensil-store.vercel.app` (URL canonique et image Open Graph absolues).
+- **Domaine** : sous-domaine Vercel uniquement ; `elie-gordo.fr` non utilisé.
 
 ## Documentation
 - [Brief validé](docs/BRIEF.md)

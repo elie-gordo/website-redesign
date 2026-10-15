@@ -4,8 +4,8 @@
 - [x] Visuel de couverture : `docs/screenshots/01-produit-desktop.webp`
 - [x] Captures optimisées : `docs/screenshots/*.webp` (18 à 41 Ko)
 - [x] Résumé étude de cas : ci-dessous et [CASE_STUDY.md](CASE_STUDY.md)
-- [ ] Lien dépôt (après publication GitHub, avec ton accord)
-- [ ] Lien démo (après choix de l'hébergement, avec ton accord)
+- [x] Lien dépôt : https://github.com/elie-gordo/website-redesign
+- [x] Lien démo : https://tensil-store.vercel.app
 
 ## Titre
 **TENSIL — boutique de démonstration avec vue 3D**
@@ -52,4 +52,4 @@ Une boutique mono-produit pour une lampe imaginée en 3D : vue à 360° en quatr
 | Page initiale < 500 Ko hors GLB/vidéo | Oui | 161 Kio |
 | Aucun secret, aucune donnée réelle | Oui | Aucun `.env`, aucune clé |
 | README, crédits, coûts, étude de cas | Oui | |
-| Publication | Non | En attente de ton accord |
+| Publication | Oui | Vercel Hobby, 2026-10-16, tests E2E et axe repassés sur la production |

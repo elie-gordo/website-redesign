@@ -90,6 +90,9 @@ test('unknown routes render the 404 page', async ({ page }) => {
 
 for (const path of ['/', '/panier', '/commande', '/a-propos', '/404']) {
   test(`no automatically detectable WCAG A/AA violations on ${path}`, async ({ page }) => {
+    // Reduced motion shows every reveal-on-scroll block at full opacity, so axe checks all of
+    // the content instead of skipping hidden blocks or measuring contrast mid-fade.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(path);
     await expectNoA11yViolations(page);
   });

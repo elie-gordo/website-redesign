@@ -13,3 +13,5 @@ tools/blender/out/
 .astro/
 test-results/
 playwright-report/
+
+.vercel
