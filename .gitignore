@@ -9,3 +9,7 @@ dist/
 build/
 .vite/
 coverage/
+tools/blender/out/
+.astro/
+test-results/
+playwright-report/

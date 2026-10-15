@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page introuvable" description="Cette page n’existe pas." noindex>
+  <section class="notfound wrap" aria-labelledby="nf-title">
+    <p class="eyebrow numeral">Erreur 404</p>
+    <h1 id="nf-title" class="display">Hors <em>du faisceau.</em></h1>
+    <p class="lead">La page demandée n’existe pas ou a été déplacée.</p>
+    <a class="btn" href="/">Revenir à TENSIL</a>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+    padding-block: clamp(5rem, 12vw, 10rem);
+  }
+</style>

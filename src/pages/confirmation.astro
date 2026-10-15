@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import { COLORWAYS } from '../data/product';
+
+const names = Object.fromEntries(COLORWAYS.map((c) => [c.id, c.name]));
+---
+
+<Base title="Confirmation" description="Confirmation d’une commande fictive TENSIL." noindex>
+  <section class="confirm wrap" aria-labelledby="confirm-title" data-confirm>
+    <p class="eyebrow">Étape 3 sur 3</p>
+    <h1 id="confirm-title" class="h2" tabindex="-1">Merci, <em data-confirm-name>votre commande</em> est enregistrée.</h1>
+    <p class="confirm__fictive">
+      Rappel : cette commande est <strong>fictive</strong>. Rien n’a été envoyé, aucun paiement n’a eu lieu et aucune
+      lampe ne sera livrée.
+    </p>
+    <dl class="confirm__meta" data-confirm-meta hidden>
+      <div><dt>Numéro (fictif)</dt><dd class="numeral" data-confirm-id></dd></div>
+      <div><dt>Articles</dt><dd data-confirm-items></dd></div>
+      <div><dt>Total</dt><dd class="numeral" data-confirm-total></dd></div>
+    </dl>
+    <p class="confirm__missing" data-confirm-missing hidden>
+      Aucune commande en cours dans cette session. Vous avez peut-être rechargé la page dans un nouvel onglet.
+    </p>
+    <a class="btn" href="/">Retour à TENSIL</a>
+  </section>
+</Base>
+
+<script is:inline type="application/json" id="confirm-names" set:html={JSON.stringify(names)}></script>
+
+<script>
+  import { ORDER_KEY, parseOrder } from '../lib/order';
+
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  let names: Record<string, string> = {};
+  try {
+    names = JSON.parse(document.getElementById('confirm-names')?.textContent ?? '{}');
+  } catch {
+    names = {};
+  }
+
+  let order = null;
+  try {
+    order = parseOrder(sessionStorage.getItem(ORDER_KEY));
+  } catch {
+    order = null;
+  }
+
+  if (order) {
+    const price = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    $('[data-confirm-name]').textContent = order.shipping.firstName.trim() || 'votre commande';
+    $('[data-confirm-id]').textContent = order.id;
+    $('[data-confirm-items]').textContent = order.items
+      .map((l) => `${l.qty} × TENSIL ${names[l.colorway] ?? l.colorway}`)
+      .join(', ');
+    $('[data-confirm-total]').textContent = price.format(order.total);
+    $('[data-confirm-meta]').hidden = false;
+    if (order.shipping.firstName.trim()) $('[data-confirm-name]').insertAdjacentText('afterend', ', votre commande');
+  } else {
+    $('#confirm-title').textContent = 'Aucune commande à afficher.';
+    $('[data-confirm-missing]').hidden = false;
+  }
+  $('#confirm-title').focus();
+</script>
+
+<style>
+  .confirm {
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+    padding-block: clamp(4rem, 10vw, 9rem) var(--section);
+    max-width: 56rem;
+    margin-inline: auto;
+  }
+
+  .confirm h1:focus {
+    outline: none;
+  }
+
+  .confirm__fictive,
+  .confirm__missing {
+    max-width: 38rem;
+    color: var(--ink-soft);
+  }
+
+  .confirm__meta {
+    width: 100%;
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .confirm__meta[hidden],
+  .confirm__missing[hidden] {
+    display: none;
+  }
+
+  .confirm__meta div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--t-small);
+  }
+
+  .confirm__meta dd {
+    margin: 0;
+    text-align: right;
+  }
+</style>

@@ -1,0 +1,26 @@
+{
+  "material": "MAT_Lacquer",
+  "space": "linear-srgb",
+  "colorways": {
+    "graphite": [
+      0.035,
+      0.038,
+      0.042
+    ],
+    "sage": [
+      0.16,
+      0.22,
+      0.17
+    ],
+    "oxide": [
+      0.42,
+      0.075,
+      0.035
+    ],
+    "cream": [
+      0.78,
+      0.72,
+      0.6
+    ]
+  }
+}

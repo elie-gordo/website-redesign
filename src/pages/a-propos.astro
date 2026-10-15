@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+
+const LAMP_REPO = 'https://github.com/elie-gordo/blender-studio-object';
+
+const credits = [
+  ['Modèle 3D, rendus, film', 'Projet blender-studio-object (scripts Blender générés avec Claude, validés par Elliott Lanza)', 'Œuvre du projet'],
+  ['three.js 0.186', 'Affichage 3D', 'MIT'],
+  ['Astro 7.4', 'Génération du site', 'MIT'],
+  ['Inter (variable)', 'Police de l’interface et du logo', 'SIL OFL 1.1'],
+  ['Instrument Serif', 'Police des titres', 'SIL OFL 1.1'],
+];
+---
+
+<Base title="À propos de la démo" description="Pourquoi la boutique TENSIL existe, ce qui est réel et ce qui est fictif, crédits et licences.">
+  <article class="about wrap">
+    <header class="about__head">
+      <p class="eyebrow">À propos</p>
+      <h1 class="h2">Une boutique de démonstration, <em>pour une lampe qui n’existe qu’en 3D.</em></h1>
+    </header>
+
+    <section aria-labelledby="why">
+      <h2 id="why" class="eyebrow">Pourquoi</h2>
+      <p>
+        Ce site est un projet de portfolio d’Elliott Lanza, développeur web. Il montre un parcours e-commerce complet
+        (choix d’un coloris, panier, commande) autour d’un objet conçu en 3D dans un projet précédent, avec une vue 3D à
+        360° intégrée à la page produit.
+      </p>
+    </section>
+
+    <section aria-labelledby="real">
+      <h2 id="real" class="eyebrow">Réel ou fictif</h2>
+      <ul>
+        <li><strong>Réel :</strong> le modèle 3D, ses matériaux, les rendus et le film, la vue 3D, le code du site.</li>
+        <li>
+          <strong>Fictif :</strong> la marque TENSIL, le prix, la livraison, les retours, les commandes et leurs numéros.
+        </li>
+        <li>
+          <strong>Données :</strong> le panier est gardé dans le stockage local de votre navigateur, la commande dans la
+          session. Rien n’est envoyé à un serveur ; aucun cookie ni outil de mesure d’audience n’est utilisé.
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="ai">
+      <h2 id="ai" class="eyebrow">Rôle de l’IA</h2>
+      <p>
+        Le site et le modèle 3D ont été réalisés en duo avec Claude (Anthropic) : Elliott a défini le concept, la direction
+        artistique et validé chaque étape ; l’IA a écrit et exécuté le code, sous sa supervision.
+      </p>
+    </section>
+
+    <section aria-labelledby="credits">
+      <h2 id="credits" class="eyebrow">Crédits et licences</h2>
+      <table>
+        <thead><tr><th scope="col">Élément</th><th scope="col">Usage</th><th scope="col">Licence</th></tr></thead>
+        <tbody>{credits.map(([a, b, c]) => <tr><td>{a}</td><td>{b}</td><td>{c}</td></tr>)}</tbody>
+      </table>
+      <p><a class="link" href={LAMP_REPO} rel="noopener">Voir le dépôt du modèle 3D</a></p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .about {
+    display: grid;
+    gap: 4rem;
+    max-width: 52rem;
+    padding-block: clamp(3rem, 8vw, 7rem) var(--section);
+  }
+
+  .about__head {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  section {
+    display: grid;
+    gap: 1.25rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  section p,
+  section li {
+    color: var(--ink-soft);
+    max-width: 42rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+  }
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    font-size: var(--t-micro);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-bottom: 0.75rem;
+  }
+
+  td {
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--line);
+    vertical-align: top;
+    padding-right: 1rem;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 40rem) {
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: grid;
+      padding-block: 0.75rem;
+      border-top: 1px solid var(--line);
+    }
+
+    td {
+      border: 0;
+      padding: 0;
+    }
+
+    td:first-child {
+      color: var(--ink);
+    }
+  }
+</style>

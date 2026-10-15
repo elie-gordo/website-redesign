@@ -1,0 +1,265 @@
+---
+import { COLORWAYS, PRODUCT } from '../data/product';
+
+const swatches = Object.fromEntries(COLORWAYS.map((c) => [c.id, { name: c.name, hex: c.hex }]));
+---
+
+<dialog class="drawer" data-cart-drawer aria-labelledby="drawer-title">
+  <div class="drawer__panel">
+    <div class="drawer__head">
+      <h2 id="drawer-title" class="eyebrow">Votre panier</h2>
+      <button class="drawer__close" type="button" data-cart-close>
+        Fermer<span class="visually-hidden"> le panier</span>
+      </button>
+    </div>
+    <p class="drawer__notice" data-cart-notice role="status"></p>
+    <div class="drawer__body" data-cart-view></div>
+    <div class="drawer__foot" data-cart-foot>
+      <dl class="drawer__totals">
+        <div><dt>Sous-total</dt><dd class="numeral" data-cart-subtotal>0 €</dd></div>
+        <div><dt>Livraison</dt><dd>Offerte <span class="fictive">(fictif)</span></dd></div>
+      </dl>
+      <a class="btn btn--block" href="/commande">Commander <span aria-hidden="true">→</span></a>
+      <a class="drawer__more link" href="/panier">Voir le panier</a>
+    </div>
+  </div>
+</dialog>
+
+<template id="cart-line-template">
+  <article class="cart-line">
+    <span class="cart-line__swatch" aria-hidden="true"></span>
+    <div class="cart-line__info">
+      <h3 class="cart-line__title">TENSIL <span class="cart-line__colorway"></span></h3>
+      <p class="cart-line__price numeral"></p>
+    </div>
+    <div class="qty" role="group">
+      <button type="button" class="qty__btn" data-qty-step="-1"><span aria-hidden="true">−</span></button>
+      <span class="qty__value numeral" aria-live="polite"></span>
+      <button type="button" class="qty__btn" data-qty-step="1"><span aria-hidden="true">+</span></button>
+    </div>
+    <button type="button" class="cart-line__remove" data-qty-remove>Retirer</button>
+  </article>
+</template>
+
+<template id="cart-empty-template">
+  <div class="cart-empty">
+    <p class="h3">Votre panier est vide.</p>
+    <p>Choisissez un coloris, puis ajoutez la lampe à votre panier.</p>
+    <a class="link" href="/#lampe" data-cart-close>Découvrir TENSIL</a>
+  </div>
+</template>
+
+<script is:inline type="application/json" id="cart-config" set:html={JSON.stringify({ swatches, price: PRODUCT.price, maxQty: PRODUCT.maxQty})}></script>
+
+<style is:global>
+  .drawer {
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+    width: min(28rem, 100vw);
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    background: var(--paper-raised);
+    color: var(--ink);
+  }
+
+  .drawer::backdrop {
+    background: rgb(15 14 13 / 0.35);
+    backdrop-filter: blur(2px);
+  }
+
+  .drawer[open] {
+    animation: drawer-in 520ms var(--ease);
+  }
+
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  .drawer__panel {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+  }
+
+  .drawer__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .drawer__close {
+    border: 0;
+    background: none;
+    padding: 0.5rem 0;
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .drawer__close:hover {
+    color: var(--brass);
+  }
+
+  .drawer__notice:empty {
+    display: none;
+  }
+
+  .drawer__notice {
+    margin: 1rem 1.5rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--brass-bright);
+    background: var(--paper);
+    font-size: var(--t-small);
+  }
+
+  .drawer__body {
+    overflow-y: auto;
+    padding: 0 1.5rem;
+  }
+
+  .drawer__foot {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .drawer__foot[hidden] {
+    display: none;
+  }
+
+  .drawer__totals {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: var(--t-small);
+  }
+
+  .drawer__totals div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .drawer__totals dd {
+    margin: 0;
+  }
+
+  .drawer__more {
+    justify-self: center;
+  }
+
+  .fictive {
+    color: var(--ink-soft);
+  }
+
+  .cart-line {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      'swatch info qty'
+      'swatch remove remove';
+    gap: 0.25rem 1rem;
+    align-items: center;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cart-line__swatch {
+    grid-area: swatch;
+    align-self: start;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12), inset -6px -8px 14px rgb(0 0 0 / 0.18);
+  }
+
+  .cart-line__info {
+    grid-area: info;
+  }
+
+  .cart-line__title {
+    font-size: var(--t-small);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+  }
+
+  .cart-line__colorway {
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+  }
+
+  .cart-line__price {
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+  }
+
+  .cart-line__remove {
+    grid-area: remove;
+    justify-self: start;
+    border: 0;
+    background: none;
+    padding: 0.25rem 0;
+    font-size: var(--t-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+    cursor: pointer;
+  }
+
+  .cart-line__remove:hover {
+    color: var(--ink);
+  }
+
+  .qty {
+    grid-area: qty;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line-strong);
+  }
+
+  .qty__btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .qty__btn:hover:not([disabled]) {
+    background: var(--paper-sunk);
+  }
+
+  .qty__btn[disabled] {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .qty__value {
+    min-width: 2ch;
+    text-align: center;
+    font-size: var(--t-small);
+  }
+
+  .cart-empty {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    padding-block: 3rem;
+    color: var(--ink-soft);
+  }
+
+  .cart-empty .h3 {
+    color: var(--ink);
+  }
+</style>

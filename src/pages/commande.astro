@@ -1,0 +1,294 @@
+---
+import Base from '../layouts/Base.astro';
+
+const fields = [
+  { id: 'firstName', label: 'Prénom', autocomplete: 'given-name', half: true },
+  { id: 'lastName', label: 'Nom', autocomplete: 'family-name', half: true },
+  { id: 'email', label: 'Adresse e-mail', autocomplete: 'email', type: 'email', inputmode: 'email' },
+  { id: 'address', label: 'Adresse', autocomplete: 'street-address' },
+  { id: 'postcode', label: 'Code postal', autocomplete: 'postal-code', inputmode: 'numeric', half: true },
+  { id: 'city', label: 'Ville', autocomplete: 'address-level2', half: true },
+] as const;
+---
+
+<Base title="Commande" description="Commande simulée de la lampe TENSIL (aucun paiement, aucune donnée envoyée)." noindex>
+  <section class="checkout wrap" aria-labelledby="checkout-title">
+    <header class="checkout__head">
+      <p class="eyebrow">Étape 2 sur 3</p>
+      <h1 id="checkout-title" class="h2">Livraison</h1>
+      <p class="checkout__warning">
+        <strong>Commande simulée.</strong> N’indiquez pas de données réelles : rien n’est envoyé ni enregistré hors de
+        votre navigateur, et aucun paiement n’est demandé.
+      </p>
+    </header>
+
+    <div class="checkout__empty" data-checkout-empty hidden>
+      <p class="h3">Votre panier est vide.</p>
+      <a class="link" href="/#lampe">Choisir un coloris</a>
+    </div>
+
+    <div class="checkout__grid" data-checkout>
+      <form class="form" novalidate data-checkout-form>
+        <div class="form__summary" data-error-summary tabindex="-1" hidden>
+          <h2 class="form__summary-title">Vérifiez les champs suivants :</h2>
+          <ul data-error-list></ul>
+        </div>
+
+        <fieldset>
+          <legend class="eyebrow">Coordonnées et adresse</legend>
+          <div class="form__fields">
+            {
+              fields.map((f) => (
+                <div class:list={['field', { 'field--half': 'half' in f && f.half }]}>
+                  <label for={f.id}>{f.label}</label>
+                  <input
+                    id={f.id}
+                    name={f.id}
+                    type={'type' in f ? f.type : 'text'}
+                    inputmode={'inputmode' in f ? f.inputmode : undefined}
+                    autocomplete={f.autocomplete}
+                    required
+                    aria-describedby={`${f.id}-error`}
+                  />
+                  <p class="field__error" id={`${f.id}-error`} data-error-for={f.id} />
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="eyebrow">Paiement</legend>
+          <p class="form__nopay">
+            Aucun moyen de paiement n’est demandé sur ce site de démonstration. Valider la commande crée simplement une
+            confirmation fictive.
+          </p>
+        </fieldset>
+
+        <button class="btn btn--block" type="submit" data-submit>
+          <span data-submit-label>Valider la commande fictive</span>
+          <span class="numeral" data-cart-subtotal>0 €</span>
+        </button>
+        <p class="form__status" data-form-status role="status"></p>
+      </form>
+
+      <aside class="order" aria-labelledby="order-title">
+        <h2 id="order-title" class="eyebrow">Votre commande</h2>
+        <div class="order__lines" data-cart-view></div>
+        <dl class="order__totals">
+          <div><dt>Livraison</dt><dd>Offerte (fictif)</dd></div>
+          <div class="order__total"><dt>Total</dt><dd class="numeral" data-cart-subtotal>0 €</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initCheckout } from '../scripts/checkout';
+  initCheckout();
+</script>
+
+<style>
+  .checkout {
+    padding-block: clamp(3rem, 8vw, 7rem) var(--section);
+  }
+
+  .checkout__head {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .checkout__warning {
+    max-width: 42rem;
+    padding: 1rem 1.25rem;
+    border-left: 2px solid var(--brass-bright);
+    background: var(--paper-raised);
+    font-size: var(--t-small);
+  }
+
+  .checkout__empty {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  .checkout__empty[hidden],
+  .checkout__grid[hidden] {
+    display: none;
+  }
+
+  .checkout__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 1fr);
+    gap: calc(var(--gutter) * 2);
+    align-items: start;
+  }
+
+  .form {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .form__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1.25rem;
+  }
+
+  .field {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.4rem;
+    align-content: start;
+  }
+
+  .field--half {
+    grid-column: span 1;
+  }
+
+  label {
+    font-size: var(--t-small);
+  }
+
+  input {
+    min-height: 3.25rem;
+    padding: 0 1rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--paper-raised);
+    transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+  }
+
+  input:hover {
+    border-color: var(--ink-soft);
+  }
+
+  input:focus-visible {
+    outline: 2px solid var(--brass-bright);
+    outline-offset: 0;
+    border-color: var(--ink);
+    background: #fff;
+  }
+
+  input[aria-invalid='true'] {
+    border-color: var(--error);
+    border-width: 1px 1px 1px 3px;
+  }
+
+  .field__error {
+    font-size: var(--t-small);
+    color: var(--error);
+  }
+
+  .field__error:empty {
+    display: none;
+  }
+
+  .form__summary {
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--error);
+    border-left-width: 3px;
+    background: var(--paper-raised);
+  }
+
+  .form__summary-title {
+    font-size: var(--t-small);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .form__summary ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: var(--t-small);
+  }
+
+  .form__summary a {
+    color: var(--error);
+  }
+
+  .form__nopay {
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+    max-width: 36rem;
+  }
+
+  .form__status:empty {
+    display: none;
+  }
+
+  .form__status {
+    font-size: var(--t-small);
+    text-align: center;
+  }
+
+  .btn[aria-busy='true'] {
+    cursor: progress;
+  }
+
+  .order {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    padding: 2rem;
+    background: var(--paper-raised);
+  }
+
+  .order :global(.cart-line) {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 'swatch info';
+  }
+
+  .order :global(.qty),
+  .order :global(.cart-line__remove) {
+    display: none;
+  }
+
+  .order__totals {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0;
+    font-size: var(--t-small);
+  }
+
+  .order__totals div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .order__totals dd {
+    margin: 0;
+  }
+
+  .order__total {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: 1.125rem;
+  }
+
+  @media (max-width: 52rem) {
+    .checkout__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .order {
+      position: static;
+      order: -1;
+    }
+
+    .field--half {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+const path = Astro.url.pathname;
+const onProduct = path === '/' || path === '/index';
+const anchor = (id: string) => (onProduct ? `#${id}` : `/#${id}`);
+---
+
+<header class="header">
+  <div class="header__inner wrap">
+    <nav class="header__nav" aria-label="Sections">
+      <a href={anchor('lampe')}>La lampe</a>
+      <a href={anchor('anatomie')}>Anatomie</a>
+      <a href={anchor('savoir-faire')}>Savoir-faire</a>
+    </nav>
+    <a class="wordmark" href="/" aria-label="TENSIL, accueil">TENSIL</a>
+    <div class="header__end">
+      <a class="header__about" href="/a-propos">La démo</a>
+      <button class="cart-toggle" type="button" data-cart-open aria-haspopup="dialog">
+        Panier <span class="numeral">(<span data-cart-count>0</span>)</span>
+        <span class="visually-hidden" data-cart-count-label>, vide</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header__inner {
+    height: var(--header-h);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+
+  .header__nav,
+  .header__end {
+    display: flex;
+    gap: clamp(1rem, 2.5vw, 2.5rem);
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .header__end {
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .header__nav a,
+  .header__about {
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: color var(--fast) var(--ease);
+  }
+
+  .header__nav a:hover,
+  .header__about:hover {
+    color: var(--ink);
+  }
+
+  .wordmark {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.62em;
+    margin-right: -0.62em;
+    text-decoration: none;
+  }
+
+  .cart-toggle {
+    border: 0;
+    background: none;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    font-size: inherit;
+  }
+
+  .cart-toggle:hover {
+    color: var(--brass);
+  }
+
+  @media (max-width: 52rem) {
+    .header__inner {
+      grid-template-columns: auto 1fr;
+    }
+
+    .header__nav,
+    .header__about {
+      display: none;
+    }
+
+    .wordmark {
+      letter-spacing: 0.45em;
+    }
+  }
+</style>

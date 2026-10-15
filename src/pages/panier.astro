@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Panier" description="Votre panier TENSIL (boutique de démonstration, aucune vente réelle)." noindex>
+  <section class="cart wrap" aria-labelledby="cart-title">
+    <header class="cart__head">
+      <p class="eyebrow">Étape 1 sur 3</p>
+      <h1 id="cart-title" class="h2">Panier</h1>
+    </header>
+    <div class="cart__grid">
+      <div class="cart__lines" data-cart-view aria-live="polite"></div>
+      <aside class="cart__summary" data-cart-foot hidden aria-label="Récapitulatif">
+        <dl>
+          <div><dt>Sous-total</dt><dd class="numeral" data-cart-subtotal>0 €</dd></div>
+          <div><dt>Livraison</dt><dd>Offerte (fictif)</dd></div>
+          <div class="cart__total"><dt>Total</dt><dd class="numeral" data-cart-subtotal>0 €</dd></div>
+        </dl>
+        <a class="btn btn--block" href="/commande">Commander <span aria-hidden="true">→</span></a>
+        <p class="cart__note">Paiement non demandé : la commande est une simulation.</p>
+      </aside>
+    </div>
+    <p class="cart__notice" data-cart-notice role="status"></p>
+  </section>
+</Base>
+
+<style>
+  .cart {
+    padding-block: clamp(3rem, 8vw, 7rem) var(--section);
+  }
+
+  .cart__head {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cart__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+
+  .cart__summary {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    padding: 2rem;
+    background: var(--paper-raised);
+  }
+
+  .cart__summary[hidden] {
+    display: none;
+  }
+
+  dl {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: var(--t-small);
+  }
+
+  dl div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .cart__total {
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 1.125rem;
+  }
+
+  .cart__note {
+    font-size: var(--t-micro);
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .cart__notice:empty {
+    display: none;
+  }
+
+  @media (max-width: 52rem) {
+    .cart__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

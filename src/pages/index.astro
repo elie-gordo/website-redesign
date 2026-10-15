@@ -1,0 +1,512 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import ProductStage from '../components/ProductStage.astro';
+import { COLORWAYS, PRODUCT } from '../data/product';
+import detail from '../assets/studio/03_detail.png';
+import lit from '../assets/studio/04_lit.png';
+import clay from '../assets/studio/clay_hero.webp';
+import wire from '../assets/studio/wire_hero.webp';
+import lighting from '../assets/studio/lighting_overview.webp';
+
+const profiles = import.meta.glob<{ default: ImageMetadata }>('../assets/lamp/*-profile.webp', { eager: true });
+const profileOf = (id: string) => profiles[`../assets/lamp/${id}-profile.webp`].default;
+
+const anatomy = [
+  ['01', 'Ressorts équilibreurs', 'Deux ressorts par segment compensent le poids du bras : aucune molette à serrer.'],
+  ['02', 'Rotules en laiton', 'Axes traversants et boutons moletés, brossés à la main.'],
+  ['03', 'Base lestée', 'Un disque de 22 cm qui garde la lampe stable, bras déplié.'],
+  ['04', 'Abat-jour à réflecteur', 'Cône laqué à l’extérieur, mat à l’intérieur pour une lumière sans éblouissement.'],
+];
+
+const faq = [
+  ['Puis-je vraiment acheter TENSIL ?', 'Non. TENSIL est une marque fictive créée pour un projet de portfolio. Le panier et la commande sont des simulations : rien n’est vendu ni facturé.'],
+  ['Les photos sont-elles réelles ?', 'Ce sont des images de synthèse. La lampe a été modélisée, éclairée et rendue dans Blender ; la vue 3D utilise le même modèle.'],
+  ['Que devient ce que je saisis à la commande ?', 'Rien ne quitte votre navigateur. Le panier est gardé dans le stockage local de votre navigateur, la commande fictive dans la session en cours.'],
+  ['Pourquoi quatre coloris ?', 'Graphite, Sauge, Oxyde et Crème ont été définis dès la conception 3D. La vue 3D change la teinte de la laque en direct, sans recharger le modèle.'],
+];
+
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'TENSIL — lampe de bureau articulée (produit fictif)',
+  description: 'Produit de démonstration d’un projet de portfolio. Marque fictive, aucune vente réelle.',
+  color: COLORWAYS.map((c) => c.name).join(', '),
+};
+---
+
+<Base
+  title="TENSIL"
+  description="TENSIL, lampe de bureau articulée à ressorts : vue 3D à 360° en quatre coloris. Boutique de démonstration, marque fictive, aucune vente réelle."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(productLd)} />
+
+  <ProductStage />
+
+  <section class="manifesto section wrap" aria-labelledby="manifesto-title">
+    <p class="eyebrow reveal">Le principe</p>
+    <h2 id="manifesto-title" class="h2 reveal">
+      Une lampe qui ne lutte pas contre son poids&nbsp;: elle <em>l’équilibre</em>.
+    </h2>
+    <p class="lead reveal">
+      Le mécanisme reprend un principe connu depuis les années 1930 : des ressorts tendus compensent le bras. TENSIL le
+      réinterprète avec une silhouette propre, une base en disque et une tête conique.
+    </p>
+  </section>
+
+  <section id="anatomie" class="anatomy" aria-labelledby="anatomy-title">
+    <div class="anatomy__image reveal">
+      <Image src={detail} alt="Gros plan sur une rotule en laiton et les ressorts de TENSIL" widths={[640, 1000, 1600]} sizes="(min-width: 64rem) 55vw, 100vw" />
+    </div>
+    <div class="anatomy__text wrap">
+      <p class="eyebrow">Anatomie</p>
+      <h2 id="anatomy-title" class="h2">Quatre détails, <em>aucun superflu.</em></h2>
+      <ol class="anatomy__list">
+        {
+          anatomy.map(([n, title, text]) => (
+            <li class="reveal">
+              <span class="anatomy__num numeral">{n}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="night" aria-labelledby="night-title">
+    <div class="night__grid wrap">
+      <div class="night__copy">
+        <p class="eyebrow">À la nuit tombée</p>
+        <h2 id="night-title" class="h2">Une lumière chaude, <em>dirigée là où vous travaillez.</em></h2>
+        <p class="lead">
+          L’abat-jour concentre la lumière sur le plan de travail. Le studio s’éteint, la lampe reste.
+        </p>
+        <button class="night__play link" type="button" data-play-film aria-controls="film">Voir le film (8 s)</button>
+      </div>
+      <figure class="night__media">
+        <Image src={lit} alt="TENSIL allumée dans un studio sombre" widths={[640, 1000, 1600]} sizes="(min-width: 64rem) 60vw, 100vw" data-film-poster />
+        <video
+          id="film"
+          class="night__video"
+          src="/media/tensil_unfold.mp4"
+          preload="none"
+          muted
+          playsinline
+          controls
+          hidden
+          aria-label="Film de 8 secondes : la lampe se déplie puis s’allume. Sans son."
+          data-film></video>
+        <figcaption class="night__caption">Rendu Cycles · image de synthèse</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="range section wrap" aria-labelledby="range-title">
+    <div class="range__head">
+      <p class="eyebrow">Coloris</p>
+      <h2 id="range-title" class="h2">Quatre laques, <em>un seul dessin.</em></h2>
+    </div>
+    <ul class="range__list">
+      {
+        COLORWAYS.map((c, i) => (
+          <li class="range__item reveal" style={`--delay:${i * 90}ms`}>
+            <button type="button" class="range__btn" data-pick-colorway={c.id}>
+              <Image src={profileOf(c.id)} alt="" widths={[400, 700]} sizes="(min-width: 64rem) 25vw, 50vw" />
+              <span class="range__name">{c.name}</span>
+              <span class="range__cta">Voir en 3D<span class="visually-hidden"> le coloris {c.name}</span></span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="savoir-faire" class="craft section" aria-labelledby="craft-title">
+    <div class="wrap craft__head">
+      <p class="eyebrow">Savoir-faire</p>
+      <h2 id="craft-title" class="h2">Dessinée en code, <em>du volume à la lumière.</em></h2>
+      <p class="lead">
+        Chaque pièce de TENSIL a été générée par des scripts Python pour Blender, écrits avec une IA et validés étape par
+        étape. Le même modèle alimente les photos et la vue 3D de cette page.
+      </p>
+    </div>
+    <ol class="craft__steps wrap">
+      <li class="reveal">
+        <Image src={clay} alt="Rendu en volume gris, sans matériau" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
+        <p><span class="numeral">I.</span> Volumes et proportions</p>
+      </li>
+      <li class="reveal">
+        <Image src={wire} alt="Rendu fil de fer montrant le maillage" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
+        <p><span class="numeral">II.</span> Maillage et articulations</p>
+      </li>
+      <li class="reveal">
+        <Image src={lighting} alt="Plateau d’éclairage : trois boîtes à lumière autour de la lampe" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
+        <p><span class="numeral">III.</span> Éclairage de studio</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="faq section wrap" aria-labelledby="faq-title">
+    <h2 id="faq-title" class="h3">Questions</h2>
+    <div class="faq__list">
+      {
+        faq.map(([q, a]) => (
+          <details>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <aside class="closing wrap" aria-label="Rappel">
+    <p class="h3">TENSIL <span class="numeral">— {PRODUCT.price} €</span></p>
+    <a class="btn" href="#lampe">Choisir un coloris <span aria-hidden="true">↑</span></a>
+  </aside>
+</Base>
+
+<style>
+  /* ---------------------------------------------------------------- manifesto */
+  .manifesto {
+    display: grid;
+    gap: 2rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .manifesto .h2 {
+    max-width: 18ch;
+  }
+
+  .manifesto .lead {
+    text-align: center;
+  }
+
+  /* ---------------------------------------------------------------- anatomy */
+  .anatomy {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    border-block: 1px solid var(--line);
+  }
+
+  .anatomy__image {
+    background: #1b1a18;
+  }
+
+  .anatomy__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 45% 80%;
+  }
+
+  .anatomy__text {
+    display: grid;
+    align-content: center;
+    gap: 2rem;
+    padding-block: var(--section);
+    max-width: 38rem;
+    margin: 0;
+  }
+
+  .anatomy__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .anatomy__list li {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 0.25rem 1rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .anatomy__num {
+    grid-row: span 2;
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    color: var(--brass);
+    padding-top: 0.35rem;
+  }
+
+  .anatomy__list h3 {
+    font-size: var(--t-small);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .anatomy__list p {
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+  }
+
+  /* ---------------------------------------------------------------- night */
+  .night {
+    background: var(--night);
+    color: var(--night-ink);
+    padding-block: var(--section);
+  }
+
+  .night .eyebrow,
+  .night .lead,
+  .night__caption {
+    color: var(--night-soft);
+  }
+
+  .night__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+    gap: var(--gutter);
+    align-items: center;
+  }
+
+  .night__copy {
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+  }
+
+  .night__play {
+    border: 0;
+    background-color: transparent;
+    color: var(--night-ink);
+    cursor: pointer;
+    padding-inline: 0;
+  }
+
+  .night__media {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .night__media img,
+  .night__video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .night__video[hidden],
+  .night__media img[hidden] {
+    display: none;
+  }
+
+  .night__caption {
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* ---------------------------------------------------------------- range */
+  .range__head {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .range__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .range__item {
+    background: var(--paper);
+    transition-delay: var(--delay);
+  }
+
+  .range__btn {
+    position: relative;
+    display: grid;
+    width: 100%;
+    padding: 0 0 1.5rem;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .range__btn img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    transition: transform 1.2s var(--ease);
+  }
+
+  .range__btn:hover img {
+    transform: scale(1.04);
+  }
+
+  .range__name {
+    padding-inline: 1.5rem;
+    font-family: var(--serif);
+    font-size: 1.75rem;
+  }
+
+  .range__cta {
+    padding-inline: 1.5rem;
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .range__btn:hover .range__cta {
+    color: var(--brass);
+  }
+
+  /* ---------------------------------------------------------------- craft */
+  .craft {
+    background: var(--paper-sunk);
+  }
+
+  .craft__head {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .craft__steps {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+
+  .craft__steps li {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .craft__steps li:nth-child(2) {
+    margin-top: clamp(0rem, 6vw, 6rem);
+  }
+
+  .craft__steps li:nth-child(3) {
+    margin-top: clamp(0rem, 12vw, 12rem);
+  }
+
+  .craft__steps img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .craft__steps p {
+    font-size: var(--t-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .craft__steps .numeral {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    letter-spacing: 0;
+    margin-right: 0.5rem;
+  }
+
+  /* ---------------------------------------------------------------- faq */
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--gutter);
+  }
+
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+
+  .faq details {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1.5rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq summary::after {
+    content: '+';
+    font-family: var(--sans);
+    font-weight: 300;
+    transition: transform var(--fast) var(--ease);
+  }
+
+  .faq details[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq details p {
+    padding-bottom: 1.5rem;
+    max-width: 44rem;
+    color: var(--ink-soft);
+  }
+
+  /* ---------------------------------------------------------------- closing */
+  .closing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    padding-block: 3rem;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ---------------------------------------------------------------- responsive */
+  @media (max-width: 64rem) {
+    .anatomy,
+    .night__grid,
+    .faq {
+      grid-template-columns: 1fr;
+    }
+
+    .anatomy__image {
+      aspect-ratio: 16 / 10;
+    }
+
+    .range__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 52rem) {
+    .craft__steps {
+      grid-template-columns: 1fr;
+    }
+
+    .craft__steps li:nth-child(n) {
+      margin-top: 0;
+    }
+
+    .closing {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+    }
+  }
+</style>
