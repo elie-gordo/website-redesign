@@ -324,13 +324,13 @@ const config = {
 
   .buy__inner {
     display: grid;
-    gap: 1.75rem;
-    padding: clamp(2.5rem, 6vw, 6rem) var(--gutter) clamp(3rem, 6vw, 6rem);
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 3vh, 3rem) var(--gutter);
     max-width: 34rem;
   }
 
   .buy .display {
-    font-size: clamp(4rem, 2.5rem + 5vw, 8.5rem);
+    font-size: clamp(4rem, 2rem + 4.5vw, 7rem);
     margin-top: -0.4rem;
   }
 
@@ -339,7 +339,7 @@ const config = {
     align-items: baseline;
     gap: 1rem;
     font-size: 1.25rem;
-    padding-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--line);
   }
 
@@ -412,8 +412,12 @@ const config = {
   .swatch__dot {
     width: 2.25rem;
     height: 2.25rem;
+    border-radius: 50%;
     background: var(--swatch);
-    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.14);
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.14),
+      inset -6px -8px 14px rgb(0 0 0 / 0.22),
+      inset 4px 5px 10px rgb(255 255 255 / 0.18);
     transition: transform var(--fast) var(--ease);
   }
 
@@ -421,6 +425,7 @@ const config = {
     content: '';
     position: absolute;
     inset: 0;
+    border-radius: 50%;
     border: 1px solid transparent;
     transition: border-color var(--fast) var(--ease), transform var(--slow) var(--ease);
     transform: scale(0.85);
@@ -551,6 +556,34 @@ const config = {
   @media (min-width: 64.01rem) {
     .buybar {
       display: none !important;
+    }
+  }
+
+  /* ---------------------------------------------------------------- short screens
+     Desktop only: the buy column must not outgrow the sticky stage (one screen). */
+  @media (min-width: 64.01rem) and (max-height: 50rem) {
+    .buy__inner {
+      gap: 0.9rem;
+    }
+
+    .buy .display {
+      font-size: clamp(3.5rem, 9vh, 5.5rem);
+    }
+
+    .buy__price {
+      padding-bottom: 0.9rem;
+    }
+
+    .buy .lead {
+      font-size: var(--t-body);
+    }
+
+    .colorways__legend {
+      margin-bottom: 0.5rem;
+    }
+
+    summary {
+      min-height: 2.75rem;
     }
   }
 

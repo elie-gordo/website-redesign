@@ -181,10 +181,15 @@ const productLd = {
 
   /* Portrait close-up (4:5) on a transparent background: the panel colour shows through. */
   .anatomy__image {
+    position: relative;
+    overflow: hidden;
     background: var(--paper-raised);
   }
 
+  /* The close-up fills its cell instead of setting the row height: the section stays one screen tall. */
   .anatomy__image img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -194,8 +199,8 @@ const productLd = {
   .anatomy__text {
     display: grid;
     align-content: center;
-    gap: 2rem;
-    padding-block: var(--section);
+    gap: 1.5rem;
+    padding-block: 3rem;
     max-width: 38rem;
     margin: 0;
   }
@@ -306,7 +311,7 @@ const productLd = {
   .range__head {
     display: grid;
     gap: 1.5rem;
-    margin-bottom: clamp(3rem, 6vw, 5rem);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
   }
 
   .range__list {
@@ -338,8 +343,8 @@ const productLd = {
 
   .range__btn img {
     width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: contain;
+    aspect-ratio: 1;
+    object-fit: cover;
     transition: transform 1.2s var(--ease);
   }
 
@@ -436,6 +441,12 @@ const productLd = {
   }
 
   /* ---------------------------------------------------------------- responsive */
+  @media (min-width: 64.01rem) {
+    .anatomy__image {
+      height: calc(100svh - var(--header-h) - 2px);
+    }
+  }
+
   @media (max-width: 64rem) {
     .anatomy,
     .night__grid,

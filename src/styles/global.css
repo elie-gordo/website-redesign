@@ -3,6 +3,8 @@
    oxide red (the Oxyde lacquer) marks what you can act on, like a correction pencil. */
 @import '@fontsource-variable/archivo/wdth.css';
 @import '@fontsource-variable/azeret-mono/wght.css';
+/* Inter only draws the wordmark: it is the face engraved on the lamp base (Blender's default text font). */
+@import '@fontsource-variable/inter/wght.css';
 
 :root {
   color-scheme: light;
@@ -28,6 +30,7 @@
   --sans: 'Archivo Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'Azeret Mono Variable', ui-monospace, 'Cascadia Mono', monospace;
   --condensed: 72%;
+  --logo: 'Inter Variable', system-ui, sans-serif;
 
   --t-micro: 0.75rem;
   --t-small: 0.8125rem;
@@ -38,7 +41,7 @@
   --t-display: clamp(3.75rem, 2rem + 8vw, 10rem);
 
   --gutter: clamp(1rem, 0.4rem + 2.6vw, 3rem);
-  --section: clamp(6rem, 3.5rem + 9vw, 12rem);
+  --section: clamp(3.5rem, 2rem + 4vw, 6.5rem);
   --measure: 34rem;
   --header-h: 4rem;
   --banner-h: 2rem;
@@ -46,6 +49,13 @@
   --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
   --fast: 180ms;
   --slow: 700ms;
+}
+
+/* Short laptop screens: every section must still fit in one screen. */
+@media (max-height: 50rem) {
+  :root {
+    --section: clamp(2.5rem, 1rem + 3vw, 4rem);
+  }
 }
 
 *,
