@@ -1,5 +1,5 @@
-import { addItem, canAddMore, loadCart, saveCart } from '../lib/cart';
-import { COLORWAY_IDS, type ColorwayId } from '../data/product';
+import { CART_EVENT, addItem, canAddMore, loadCart, saveCart } from '../lib/cart';
+import { COLORWAY_IDS, colorwayFromSlug, type ColorwayId } from '../data/product';
 import { openCartDrawer } from './cart-ui';
 import type { ViewerHandle } from './viewer';
 
@@ -22,11 +22,6 @@ function readConfig(): StageConfig | null {
 }
 
 const isColorway = (v: string | null | undefined): v is ColorwayId => COLORWAY_IDS.includes(v as ColorwayId);
-
-function colorwayFromUrl(config: StageConfig): ColorwayId | null {
-  const slug = new URLSearchParams(location.search).get('coloris');
-  return (Object.keys(config.colorways) as ColorwayId[]).find((id) => config.colorways[id].slug === slug) ?? null;
-}
 
 /** "Voir le film": the 2.6 MB video is only requested on click (preload="none"). */
 function initFilm(): void {
@@ -209,11 +204,11 @@ export function initProduct(): void {
     action();
   });
 
-  window.addEventListener('tensil:cart', updateAddButton);
+  window.addEventListener(CART_EVENT, updateAddButton);
   loadBtn.addEventListener('click', () => void startViewer());
 
   // ---------------------------------------------------------------- start
-  const fromUrl = colorwayFromUrl(config);
+  const fromUrl = colorwayFromSlug(new URLSearchParams(location.search).get('coloris'));
   if (fromUrl && fromUrl !== current) applyColorway(fromUrl, { updateUrl: false });
   updateAddButton();
 

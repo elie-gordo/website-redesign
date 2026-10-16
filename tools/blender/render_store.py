@@ -7,7 +7,10 @@ Reuses the lamp project's scripts (blender-studio-object) without modifying them
 Usage:
   blender -b --factory-startup --python tools/blender/render_store.py -- \
       --lamp-scripts ../blender-studio-object/blender/scripts \
-      --out public/images/lamp [--samples 128] [--scale 100] [--colorway sage]
+      --out src/assets/lamp [--samples 128] [--scale 100] [--colorway sage]
+  # only re-apply the edge fade to existing renders (no rendering):
+  blender -b --factory-startup --python tools/blender/render_store.py -- \
+      --lamp-scripts ../blender-studio-object/blender/scripts --out src/assets/lamp --fade-only
 """
 import argparse
 import os
@@ -20,8 +23,11 @@ RES = (1600, 2000)  # 4:5 portrait, the store's product frame
 SHOTS = {
     "hero": ("CAM_Hero", -20, 80, (-0.10, -0.12, 0.25)),
     "profile": ("CAM_Profile", 90, 80, (0.17, 0.03, 0.25)),
+    "detail": ("CAM_Detail", -20, 70, (0.0, 0.01, 0.12)),
 }
+DEFAULT_SHOTS = ("hero", "profile")  # "detail" is only needed for graphite (anatomy section)
 ALPHA_FLOOR = 0.04  # residual shadow-catcher haze below this is cleared to 0
+EDGE_FADE = 0.08  # fraction of width/height over which alpha fades to 0 at the frame edges
 
 
 def parse_args():
@@ -32,6 +38,8 @@ def parse_args():
     p.add_argument("--samples", type=int, default=128)
     p.add_argument("--scale", type=int, default=100)
     p.add_argument("--colorway", action="append", help="limit to these colorways (default: all)")
+    p.add_argument("--shot", action="append", choices=sorted(SHOTS), help="limit to these shots (default: hero, profile)")
+    p.add_argument("--fade-only", action="store_true", help="only apply the edge fade to existing files")
     return p.parse_args(argv)
 
 
@@ -45,21 +53,33 @@ def setup_output(scene, scale):
     settings.quality = 82
 
 
-def clear_haze(path):
-    """Remap alpha so the faint full-frame haze from the shadow catcher becomes transparent."""
+def edit_alpha(path, clear_haze=True, fade_edges=True):
+    """Post-process a render's alpha in place.
+
+    clear_haze: remap alpha so the faint haze from the shadow catcher becomes transparent.
+    fade_edges: fade alpha to 0 near the frame, so the wide soft floor shadow never ends on a
+    hard edge once the image sits on the page background.
+    """
     import numpy as np
 
     img = bpy.data.images.load(path)
+    w, h = img.size
     px = np.empty(len(img.pixels), dtype=np.float32)
     img.pixels.foreach_get(px)
-    px = px.reshape(-1, 4)
-    before = float(px[:, 3].min())
-    px[:, 3] = np.clip((px[:, 3] - ALPHA_FLOOR) / (1 - ALPHA_FLOOR), 0, 1)
+    px = px.reshape(h, w, 4)
+    if clear_haze:
+        px[..., 3] = np.clip((px[..., 3] - ALPHA_FLOOR) / (1 - ALPHA_FLOOR), 0, 1)
+    if fade_edges:
+        def ramp(n):
+            d = np.minimum(np.arange(n), np.arange(n)[::-1]) / (n * EDGE_FADE)
+            t = np.clip(d, 0, 1)
+            return t * t * (3 - 2 * t)  # smoothstep
+
+        px[..., 3] *= ramp(h)[:, None] * ramp(w)[None, :]
     img.pixels.foreach_set(px.ravel())
     img.file_format = "WEBP"
     img.save(filepath=path, quality=82)
     bpy.data.images.remove(img)
-    return before
 
 
 def main():
@@ -69,6 +89,17 @@ def main():
     import materials
     import studio
     from common import collection
+
+    out_dir = os.path.abspath(args.out)
+    colorways = args.colorway or list(materials.COLORWAYS)
+    shots = args.shot or list(DEFAULT_SHOTS)
+    if args.fade_only:
+        for colorway in colorways:
+            for shot in shots:
+                path = os.path.join(out_dir, f"{colorway}-{shot}.webp")
+                edit_alpha(path, clear_haze=False)
+                print(f"[store] faded edges of {path}")
+        return
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     mats = materials.build_all("graphite")
@@ -83,10 +114,10 @@ def main():
     setup_output(scene, args.scale)
 
     lacquer = mats["lacquer"].node_tree.nodes["Principled BSDF"].inputs["Base Color"]
-    out_dir = os.path.abspath(args.out)
-    for colorway in args.colorway or materials.COLORWAYS:
+    for colorway in colorways:
         lacquer.default_value = (*materials.COLORWAYS[colorway], 1)
-        for shot, (cam, yaw, focal, aim_at) in SHOTS.items():
+        for shot in shots:
+            cam, yaw, focal, aim_at = SHOTS[shot]
             angles = list(lamp.POSES["work"])
             angles[0] = yaw
             lamp.set_pose(rig, angles)
@@ -95,8 +126,9 @@ def main():
             scene.camera.data.lens = focal
             scene.render.filepath = os.path.join(out_dir, f"{colorway}-{shot}.webp")
             bpy.ops.render.render(write_still=True)
-            haze = clear_haze(scene.render.filepath)
-            print(f"[store] rendered {scene.render.filepath} (min alpha before cleanup {haze:.3f})")
+            # The close-up fills its panel edge to edge: a hard crop reads better than a fade.
+            edit_alpha(scene.render.filepath, fade_edges=shot != "detail")
+            print(f"[store] rendered {scene.render.filepath}")
 
 
 if __name__ == "__main__":

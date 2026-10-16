@@ -3,11 +3,8 @@ import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ProductStage from '../components/ProductStage.astro';
 import { COLORWAYS, PRODUCT } from '../data/product';
-import detail from '../assets/studio/03_detail.png';
+import detail from '../assets/lamp/graphite-detail.webp';
 import lit from '../assets/studio/04_lit.png';
-import clay from '../assets/studio/clay_hero.webp';
-import wire from '../assets/studio/wire_hero.webp';
-import lighting from '../assets/studio/lighting_overview.webp';
 
 const profiles = import.meta.glob<{ default: ImageMetadata }>('../assets/lamp/*-profile.webp', { eager: true });
 const profileOf = (id: string) => profiles[`../assets/lamp/${id}-profile.webp`].default;
@@ -103,49 +100,26 @@ const productLd = {
     </div>
   </section>
 
-  <section class="range section wrap" aria-labelledby="range-title">
-    <div class="range__head">
-      <p class="eyebrow">Coloris</p>
-      <h2 id="range-title" class="h2">Quatre laques, <em>un seul dessin.</em></h2>
+  <section id="coloris" class="range section" aria-labelledby="range-title">
+    <div class="wrap">
+      <div class="range__head">
+        <p class="eyebrow">Coloris</p>
+        <h2 id="range-title" class="h2">Quatre laques, <em>un seul dessin.</em></h2>
+      </div>
+      <ul class="range__list">
+        {
+          COLORWAYS.map((c, i) => (
+            <li class="range__item reveal" style={`--delay:${i * 90}ms`}>
+              <button type="button" class="range__btn" data-pick-colorway={c.id}>
+                <Image src={profileOf(c.id)} alt="" widths={[400, 700]} sizes="(min-width: 64rem) 25vw, 50vw" />
+                <span class="range__name">{c.name}</span>
+                <span class="range__cta">Voir en 3D<span class="visually-hidden"> le coloris {c.name}</span></span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
     </div>
-    <ul class="range__list">
-      {
-        COLORWAYS.map((c, i) => (
-          <li class="range__item reveal" style={`--delay:${i * 90}ms`}>
-            <button type="button" class="range__btn" data-pick-colorway={c.id}>
-              <Image src={profileOf(c.id)} alt="" widths={[400, 700]} sizes="(min-width: 64rem) 25vw, 50vw" />
-              <span class="range__name">{c.name}</span>
-              <span class="range__cta">Voir en 3D<span class="visually-hidden"> le coloris {c.name}</span></span>
-            </button>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section id="savoir-faire" class="craft section" aria-labelledby="craft-title">
-    <div class="wrap craft__head">
-      <p class="eyebrow">Savoir-faire</p>
-      <h2 id="craft-title" class="h2">Dessinée en code, <em>du volume à la lumière.</em></h2>
-      <p class="lead">
-        Chaque pièce de TENSIL a été générée par des scripts Python pour Blender, écrits avec une IA et validés étape par
-        étape. Le même modèle alimente les photos et la vue 3D de cette page.
-      </p>
-    </div>
-    <ol class="craft__steps wrap">
-      <li class="reveal">
-        <Image src={clay} alt="Rendu en volume gris, sans matériau" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
-        <p><span class="numeral">I.</span> Volumes et proportions</p>
-      </li>
-      <li class="reveal">
-        <Image src={wire} alt="Rendu fil de fer montrant le maillage" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
-        <p><span class="numeral">II.</span> Maillage et articulations</p>
-      </li>
-      <li class="reveal">
-        <Image src={lighting} alt="Plateau d’éclairage : trois boîtes à lumière autour de la lampe" widths={[480, 800]} sizes="(min-width: 52rem) 33vw, 100vw" />
-        <p><span class="numeral">III.</span> Éclairage de studio</p>
-      </li>
-    </ol>
   </section>
 
   <section class="faq section wrap" aria-labelledby="faq-title">
@@ -192,15 +166,16 @@ const productLd = {
     border-block: 1px solid var(--line);
   }
 
+  /* Portrait close-up (4:5) on a transparent background: the panel colour shows through. */
   .anatomy__image {
-    background: #1b1a18;
+    background: var(--paper-raised);
   }
 
   .anatomy__image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 45% 80%;
+    object-position: 40% 60%;
   }
 
   .anatomy__text {
@@ -304,6 +279,10 @@ const productLd = {
   }
 
   /* ---------------------------------------------------------------- range */
+  .range {
+    background: var(--paper-sunk);
+  }
+
   .range__head {
     display: grid;
     gap: 1.5rem;
@@ -364,59 +343,6 @@ const productLd = {
 
   .range__btn:hover .range__cta {
     color: var(--brass);
-  }
-
-  /* ---------------------------------------------------------------- craft */
-  .craft {
-    background: var(--paper-sunk);
-  }
-
-  .craft__head {
-    display: grid;
-    gap: 1.5rem;
-    margin-bottom: clamp(3rem, 6vw, 5rem);
-  }
-
-  .craft__steps {
-    list-style: none;
-    margin-block: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--gutter);
-    align-items: start;
-  }
-
-  .craft__steps li {
-    display: grid;
-    gap: 1rem;
-    align-content: start;
-  }
-
-  .craft__steps li:nth-child(2) {
-    margin-top: clamp(0rem, 6vw, 6rem);
-  }
-
-  .craft__steps li:nth-child(3) {
-    margin-top: clamp(0rem, 12vw, 12rem);
-  }
-
-  .craft__steps img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-  }
-
-  .craft__steps p {
-    font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-
-  .craft__steps .numeral {
-    font-family: var(--serif);
-    font-size: 1.1rem;
-    letter-spacing: 0;
-    margin-right: 0.5rem;
   }
 
   /* ---------------------------------------------------------------- faq */
@@ -486,7 +412,8 @@ const productLd = {
     }
 
     .anatomy__image {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 4 / 5;
+      max-height: 80svh;
     }
 
     .range__list {
@@ -495,14 +422,6 @@ const productLd = {
   }
 
   @media (max-width: 52rem) {
-    .craft__steps {
-      grid-template-columns: 1fr;
-    }
-
-    .craft__steps li:nth-child(n) {
-      margin-top: 0;
-    }
-
     .closing {
       flex-direction: column;
       align-items: stretch;

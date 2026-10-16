@@ -1,4 +1,4 @@
-import { loadCart, saveCart } from '../lib/cart';
+import { CART_EVENT, loadCart, saveCart } from '../lib/cart';
 import { ORDER_KEY, createOrder, validateShipping, type FieldErrors, type ShippingForm } from '../lib/order';
 
 const SIMULATED_DELAY_MS = 900;
@@ -45,7 +45,7 @@ export function initCheckout(): void {
     empty.hidden = !isEmpty;
   };
   syncEmpty();
-  window.addEventListener('tensil:cart', syncEmpty);
+  window.addEventListener(CART_EVENT, syncEmpty);
 
   // Re-validate a field once the user leaves it, only if it was already flagged.
   form.addEventListener('focusout', (e) => {

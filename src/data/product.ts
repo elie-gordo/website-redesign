@@ -34,10 +34,6 @@ export function colorwayFromSlug(slug: string | null): ColorwayId | null {
   return COLORWAYS.find((c) => c.slug === slug || c.id === slug)?.id ?? null;
 }
 
-export function getColorway(id: ColorwayId): Colorway {
-  return COLORWAYS.find((c) => c.id === id) as Colorway;
-}
-
 /** Fictitious commercial data — clearly labelled as such on every page. */
 export const PRODUCT = {
   name: 'TENSIL',

@@ -4,7 +4,7 @@
 >
 > **Démo en ligne : https://tensil-store.vercel.app** (Vercel, offre Hobby gratuite).
 
-![Page produit, vue 3D](docs/screenshots/01-produit-desktop.webp)
+![Page produit, vue 3D](docs/screenshots/01-produit.webp)
 
 ## 1. Objectif
 Boutique e-commerce mono-produit pour la lampe articulée TENSIL, modélisée dans le projet [blender-studio-object](https://github.com/elie-gordo/blender-studio-object). Le site montre un parcours d'achat complet (coloris → panier → commande simulée → confirmation) autour d'une **vue 3D à 360° en quatre coloris**, dans une direction artistique sobre inspirée des éditeurs de luminaires haut de gamme.
@@ -16,7 +16,7 @@ Boutique e-commerce mono-produit pour la lampe articulée TENSIL, modélisée da
 ## 3. Pages et fonctionnalités
 | Page | Contenu |
 |---|---|
-| `/` Produit | Photo studio du coloris choisi, vue 3D 360° chargée à la demande (souris, toucher, clavier), 4 coloris (URL partageable `?coloris=sauge`), ajout au panier, caractéristiques, anatomie, film de 8 s, galerie des coloris, savoir-faire, FAQ, barre d'achat fixe sur mobile |
+| `/` Produit | Photo studio du coloris choisi, vue 3D 360° chargée à la demande (souris, toucher, clavier), 4 coloris (URL partageable `?coloris=sauge`), ajout au panier, caractéristiques, anatomie (gros plan), film de 8 s, galerie des coloris, FAQ, barre d'achat fixe sur mobile |
 | Tiroir panier | Quantités (1 à 5 par coloris), suppression, sous-total, état vide, message si le stockage est bloqué |
 | `/panier` | Même panier en pleine page, récapitulatif |
 | `/commande` | Formulaire de livraison simulé : validation champ par champ, résumé d'erreurs avec liens, envoi simulé, aucun champ bancaire |
@@ -34,7 +34,8 @@ Boutique e-commerce mono-produit pour la lampe articulée TENSIL, modélisée da
 | [three.js](https://threejs.org) | 0.186.1 | Vue 3D (GLTFLoader, MeshoptDecoder, OrbitControls, RoomEnvironment) | MIT |
 | Inter (variable), Instrument Serif | @fontsource 5.3.0 | Polices auto-hébergées | SIL OFL 1.1 |
 | Vitest | 5.0.5 | Tests unitaires | MIT |
-| Playwright + @axe-core/playwright | 1.64.1 / 4.14.0 | Tests de bout en bout et d'accessibilité | Apache-2.0 / MPL-2.0 |
+| Playwright + @axe-core/playwright | 1.64.1 / 4.14.0 | Tests de bout en bout et d'accessibilité, captures | Apache-2.0 / MPL-2.0 |
+| sharp | 0.35.5 | Conversion des captures en WebP (déjà utilisé par Astro) | Apache-2.0 |
 | Blender | 5.2.2 LTS | Export GLB et rendus des coloris (scripts dans `tools/blender/`) | GPL (créations libres) |
 | glTF-Transform CLI | 4.5.1 | Compression Meshopt du GLB | MIT |
 
@@ -52,7 +53,10 @@ npm test             # tests unitaires
 npx playwright install chromium   # une fois
 npm run test:e2e     # E2E + axe (lancer `npm run preview` avant)
 BASE_URL=https://tensil-store.vercel.app npm run test:e2e   # mêmes tests sur le site en ligne
+npm run screenshots  # captures du portfolio dans docs/screenshots/ (`npm run preview` avant)
 ```
+
+Les captures sont cadrées sur les limites réelles des sections (et non au défilement), en `prefers-reduced-motion` pour un rendu identique à chaque exécution : desktop 1440 px ×2, mobile iPhone 13 ×3.
 
 ### Régénérer les assets 3D (optionnel)
 Nécessite Blender 5.2 et le dépôt `blender-studio-object` cloné à côté de celui-ci. Les scripts du dépôt lampe sont réutilisés **sans modification**.
@@ -65,9 +69,13 @@ B="C:/Program Files/Blender Foundation/Blender 5.2/blender.exe"
   --out tools/blender/out/tensil_store_raw.glb --colorways src/data/colorways.json
 npx @gltf-transform/cli@4.5.1 optimize tools/blender/out/tensil_store_raw.glb public/models/tensil.glb \
   --compress meshopt --palette false --join false --flatten false
-# 8 rendus des coloris (fond transparent, ~6 min sur RTX 2050)
+# 8 rendus des coloris (3/4 et profil, fond transparent, ~6 min sur RTX 2050)
 "$B" -b --factory-startup --python tools/blender/render_store.py -- \
   --lamp-scripts ../blender-studio-object/blender/scripts --out src/assets/lamp --samples 128
+# gros plan de la section Anatomie (graphite uniquement)
+"$B" -b --factory-startup --python tools/blender/render_store.py -- \
+  --lamp-scripts ../blender-studio-object/blender/scripts --out src/assets/lamp --samples 128 \
+  --colorway graphite --shot detail
 ```
 
 ## 6. Choix de conception
@@ -75,7 +83,7 @@ npx @gltf-transform/cli@4.5.1 optimize tools/blender/out/tensil_store_raw.glb pu
 - **Modèle nettoyé pour le 360°.** Câble de 80 cm raccourci et terminé par une prise (emprise au sol 1,27 m → 0,69 m, la rotation reste centrée), rugosité du métal brossé rétablie (le bruit procédural ne s'exporte pas en glTF), ampoule opaque (pas de passe de transmission). Résultat : 199 Ko, `gltf-transform validate` sans erreur ni avertissement.
 - **3D à la demande.** La photo studio est l'élément LCP ; three.js (~212 Ko gzip au total) et le GLB ne se chargent qu'au premier signe d'intention (souris, toucher, clavier, focus) ou via le bouton « Tourner en 3D ». Une première version qui chargeait la 3D automatiquement obtenait 58 en performance Lighthouse mobile (TBT 5,6 s) ; la version à la demande obtient 99.
 - **Cadrage adaptatif.** La distance caméra est calculée sur le champ de vision le plus étroit : la lampe n'est jamais coupée en portrait.
-- **Rendus à fond transparent.** Le fond studio devient un *shadow catcher* : chaque photo garde son ombre de contact et se pose sur le fond de la page, quel qu'il soit.
+- **Rendus à fond transparent.** Le fond studio devient un *shadow catcher* : chaque photo garde son ombre de contact et se pose sur le fond de la page, quel qu'il soit. L'alpha est ensuite fondu sur les 8 % du bord du cadre, pour que la grande ombre douce ne s'arrête jamais sur une arête nette. Le gros plan de l'anatomie est rendu directement en 4:5 pour remplir sa colonne sans agrandissement.
 - **Direction artistique « galerie ».** Références observées : Flos, Astep, Michael Anastassiades, Apparatus (filets fins, capitales espacées, grands vides, objet seul). Papier chaud `#efebe4`, encre `#171614`, laiton réservé aux interactions (survol des boutons, focus clavier), une seule section sombre pour la lumière. Instrument Serif pour les titres, Inter (la police du logo TENSIL) pour l'interface.
 - **Accessibilité.** Coloris en boutons radio natifs, tiroir en `<dialog>` modal (focus piégé, Échap), vue 3D focusable pilotable aux flèches, +/−, Début ; erreurs de formulaire reliées par `aria-describedby` et résumé focalisé ; lien d'évitement ; contrastes vérifiés par axe.
 - **Données.** Le panier est validé à la lecture (`parseCart` ignore toute donnée inconnue ou hors bornes) : le stockage local est traité comme une entrée non fiable.

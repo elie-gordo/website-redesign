@@ -1,14 +1,11 @@
 import { CART_EVENT, CART_KEY, countItems, loadCart, saveCart, setQty, subtotal, type CartLine } from '../lib/cart';
-import type { ColorwayId } from '../data/product';
+import { formatPrice as price, type ColorwayId } from '../data/product';
 
 interface CartConfig {
   swatches: Record<ColorwayId, { name: string; hex: string }>;
   price: number;
   maxQty: number;
 }
-
-const price = (n: number) =>
-  new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 
 function readConfig(): CartConfig | null {
   const el = document.getElementById('cart-config');

@@ -1,8 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import { COLORWAYS } from '../data/product';
-
-const names = Object.fromEntries(COLORWAYS.map((c) => [c.id, c.name]));
 ---
 
 <Base title="Confirmation" description="Confirmation d’une commande fictive TENSIL." noindex>
@@ -25,18 +22,12 @@ const names = Object.fromEntries(COLORWAYS.map((c) => [c.id, c.name]));
   </section>
 </Base>
 
-<script is:inline type="application/json" id="confirm-names" set:html={JSON.stringify(names)}></script>
-
 <script>
   import { ORDER_KEY, parseOrder } from '../lib/order';
+  import { COLORWAYS, formatPrice } from '../data/product';
 
   const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
-  let names: Record<string, string> = {};
-  try {
-    names = JSON.parse(document.getElementById('confirm-names')?.textContent ?? '{}');
-  } catch {
-    names = {};
-  }
+  const nameOf = (id: string) => COLORWAYS.find((c) => c.id === id)?.name ?? id;
 
   let order = null;
   try {
@@ -46,13 +37,10 @@ const names = Object.fromEntries(COLORWAYS.map((c) => [c.id, c.name]));
   }
 
   if (order) {
-    const price = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
     $('[data-confirm-name]').textContent = order.shipping.firstName.trim() || 'votre commande';
     $('[data-confirm-id]').textContent = order.id;
-    $('[data-confirm-items]').textContent = order.items
-      .map((l) => `${l.qty} × TENSIL ${names[l.colorway] ?? l.colorway}`)
-      .join(', ');
-    $('[data-confirm-total]').textContent = price.format(order.total);
+    $('[data-confirm-items]').textContent = order.items.map((l) => `${l.qty} × TENSIL ${nameOf(l.colorway)}`).join(', ');
+    $('[data-confirm-total]').textContent = formatPrice(order.total);
     $('[data-confirm-meta]').hidden = false;
     if (order.shipping.firstName.trim()) $('[data-confirm-name]').insertAdjacentText('afterend', ', votre commande');
   } else {

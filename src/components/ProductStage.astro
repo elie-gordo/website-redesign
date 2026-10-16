@@ -161,7 +161,8 @@ const config = {
   .stage {
     position: sticky;
     top: var(--header-h);
-    height: calc(100svh - var(--header-h));
+    /* Fits the first screen exactly: viewport minus demo banner and header. */
+    height: calc(100svh - var(--header-h) - var(--banner-h));
     min-height: 32rem;
     background: radial-gradient(60% 55% at 50% 52%, var(--paper-raised) 0%, var(--paper) 70%);
     overflow: hidden;
