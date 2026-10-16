@@ -1,0 +1,123 @@
+---
+// Opening screen of the store: the lamp turns in and lifts its head, then the page appears.
+// The film is rendered offline with Remotion from the same GLB (tools/remotion): the browser
+// only plays a 200 KB MP4, no 3D runtime. Purely decorative (aria-hidden, no pointer capture),
+// it hides itself with CSS alone if the script never runs, and is skipped with reduced motion.
+---
+
+<div class="intro" data-intro aria-hidden="true">
+  <video
+    class="intro__film"
+    src="/media/intro.mp4"
+    poster="/media/intro-poster.jpg"
+    width="1080"
+    height="1080"
+    muted
+    playsinline
+    autoplay
+    preload="auto"
+    disablepictureinpicture
+    data-intro-film></video>
+  <p class="intro__mark">TENSIL</p>
+  <p class="intro__dim dim"><span>Lampe de bureau articulée</span></p>
+</div>
+
+<script>
+  const SEEN_KEY = 'tensil-intro-seen';
+  const intro = document.querySelector<HTMLElement>('[data-intro]');
+  const film = document.querySelector<HTMLVideoElement>('[data-intro-film]');
+
+  const seenThisSession = (): boolean => {
+    try {
+      if (sessionStorage.getItem(SEEN_KEY)) return true;
+      sessionStorage.setItem(SEEN_KEY, '1');
+    } catch {
+      // Storage blocked: show the intro, it is short and skippable.
+    }
+    return false;
+  };
+
+  if (intro && film) {
+    if (seenThisSession()) {
+      intro.remove();
+    } else {
+      const finish = () => {
+        intro.classList.add('is-done');
+        intro.addEventListener('animationend', () => intro.remove(), { once: true });
+      };
+      film.addEventListener('ended', finish, { once: true });
+      film.addEventListener('error', finish, { once: true });
+      // Any sign of intent ends it early: nobody should wait for a loading screen.
+      for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) {
+        window.addEventListener(type, finish, { once: true, passive: true });
+      }
+    }
+  }
+</script>
+
+<style>
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1.5rem;
+    background: var(--paper);
+    pointer-events: none;
+    /* Safety net without JS (or if autoplay is refused): the film lasts 3 s. */
+    animation: intro-out 500ms var(--ease) 3.4s forwards;
+  }
+
+  .intro.is-done {
+    animation: intro-out 500ms var(--ease) forwards;
+  }
+
+  @keyframes intro-out {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .intro__film {
+    width: min(70vmin, 40rem);
+    height: auto;
+    aspect-ratio: 1;
+    /* The film background is the page paper; the soft edge hides any colour drift from video encoding. */
+    mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
+  }
+
+  .intro__mark {
+    margin-top: -2rem;
+    font-family: var(--logo);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.62em;
+    margin-right: -0.62em;
+    animation: intro-in 700ms var(--ease) 400ms both;
+  }
+
+  .intro__dim {
+    width: min(70vmin, 40rem);
+    animation: intro-in 700ms var(--ease) 600ms both;
+  }
+
+  .intro__dim span {
+    color: var(--ink-soft);
+  }
+
+  @keyframes intro-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .intro {
+      display: none;
+    }
+  }
+</style>

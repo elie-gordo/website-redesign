@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import Intro from '../components/Intro.astro';
 import ProductStage from '../components/ProductStage.astro';
 import { COLORWAYS, PRODUCT } from '../data/product';
 import detail from '../assets/lamp/graphite-detail.webp';
@@ -38,6 +39,7 @@ const productLd = {
 >
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(productLd)} />
 
+  <Intro />
   <ProductStage />
 
   <section class="manifesto section wrap" aria-labelledby="manifesto-title">
