@@ -59,7 +59,14 @@ async function frame(page, selector, name) {
       top: r.top + window.scrollY,
       height: r.height,
       width: document.documentElement.clientWidth,
-      background: getComputedStyle(el).backgroundColor,
+      // A transparent section shows the page behind it: extend with the first opaque ancestor.
+      background: (() => {
+        for (let node = el; node; node = node.parentElement) {
+          const bg = getComputedStyle(node).backgroundColor;
+          if (bg !== 'transparent' && !bg.endsWith(', 0)')) return bg;
+        }
+        return '#ffffff';
+      })(),
     };
   });
   const frameHeight = Math.round((width * 9) / 16);
@@ -171,10 +178,17 @@ async function desktop(browser) {
   await page.close();
 
   page = await open(ctx, '/');
-  await frame(page, '#anatomie', '03-anatomie');
   await frame(page, '.night', '04-nuit');
-  await frame(page, '#coloris .wrap', '05-coloris');
+  await frame(page, '#coloris', '05-coloris');
   await page.close();
+
+  // The anatomy section is exactly one screen below the sticky header: a viewport taller by the
+  // header (and the section's two border lines) makes it exactly 16:9, image edge to edge.
+  const header = 64 + 2;
+  const tall = await browser.newContext({ ...DESKTOP, viewport: { width: 1920, height: 1080 + header } });
+  page = await open(tall, '/');
+  await frame(page, '#anatomie', '03-anatomie');
+  await tall.close();
 
   page = await open(ctx, '/commande', CART);
   await fillInvalidCheckout(page);
