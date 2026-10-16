@@ -38,8 +38,9 @@ const productLd = {
   description="TENSIL, lampe de bureau articulée à ressorts : vue 3D à 360° en quatre coloris. Boutique de démonstration, marque fictive, aucune vente réelle."
 >
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(productLd)} />
+  <script slot="head" is:inline src="/intro-gate.js"></script>
+  <Intro slot="before" />
 
-  <Intro />
   <ProductStage />
 
   <section class="manifesto section wrap" aria-labelledby="manifesto-title">

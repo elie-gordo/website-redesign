@@ -6,6 +6,31 @@ async function expectNoA11yViolations(page: Page) {
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)).toEqual([]);
 }
 
+// The entry screen shows once per session; every test but its own starts past it.
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.title.startsWith('entry screen')) return;
+  await page.addInitScript(() => sessionStorage.setItem('tensil-intro-seen', '1'));
+});
+
+test('entry screen: the film plays, the button opens the site, then it is not shown again', async ({ page }) => {
+  await page.goto('/');
+  const dialog = page.getByRole('dialog', { name: /TENSIL/ });
+  await expect(dialog).toBeVisible();
+  // The site behind is inert until the visitor enters.
+  await expect(page.locator('main')).toHaveJSProperty('inert', true);
+  await dialog.getByRole('button', { name: /Découvrir la lampe/ }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('main')).toHaveJSProperty('inert', false);
+  await expect(page.getByRole('button', { name: /Ajouter au panier/ })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('dialog', { name: /TENSIL/ })).toHaveCount(0);
+});
+
+test('entry screen: no intro outside the home page', async ({ page }) => {
+  await page.goto('/panier');
+  await expect(page.getByRole('dialog', { name: /TENSIL/ })).toHaveCount(0);
+});
+
 test('choosing a colorway updates the label, the poster and the URL', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('radio', { name: 'Sauge' }).check({ force: true });

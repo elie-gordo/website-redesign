@@ -41,6 +41,7 @@ const canonical = Astro.site ? new URL(cleanPath, Astro.site).href : undefined;
     <slot name="head" />
   </head>
   <body>
+    <slot name="before" />
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <p class="demo-banner">
       <span class="demo-banner__long">Projet de démonstration <span aria-hidden="true">·</span> </span>Marque fictive

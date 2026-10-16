@@ -1,11 +1,11 @@
 ---
-// Opening screen of the store: the lamp turns in and lifts its head, then the page appears.
-// The film is rendered offline with Remotion from the same GLB (tools/remotion): the browser
-// only plays a 200 KB MP4, no 3D runtime. Purely decorative (aria-hidden, no pointer capture),
-// it hides itself with CSS alone if the script never runs, and is skipped with reduced motion.
+// Entry screen of the store: the lamp turns in and lifts its head, then the visitor enters with
+// the button. The film is rendered offline with Remotion from the same GLB (tools/remotion):
+// the browser only plays a 180 KB MP4, no 3D runtime.
+// Shown only when public/intro-gate.js has set html.has-intro (first visit of the session, JS on).
 ---
 
-<div class="intro" data-intro aria-hidden="true">
+<div class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" data-intro>
   <video
     class="intro__film"
     src="/media/intro.mp4"
@@ -14,64 +14,90 @@
     height="1080"
     muted
     playsinline
-    autoplay
     preload="auto"
     disablepictureinpicture
+    aria-hidden="true"
     data-intro-film></video>
-  <p class="intro__mark">TENSIL</p>
+  <p id="intro-title" class="intro__mark"><span class="visually-hidden">Bienvenue sur </span>TENSIL</p>
   <p class="intro__dim dim"><span>Lampe de bureau articulée</span></p>
+  <button class="btn intro__enter" type="button" data-intro-enter>
+    <span>Découvrir la lampe</span>
+    <span aria-hidden="true">→</span>
+  </button>
 </div>
 
 <script>
   const SEEN_KEY = 'tensil-intro-seen';
+  const root = document.documentElement;
   const intro = document.querySelector<HTMLElement>('[data-intro]');
   const film = document.querySelector<HTMLVideoElement>('[data-intro-film]');
+  const enter = document.querySelector<HTMLButtonElement>('[data-intro-enter]');
 
-  const seenThisSession = (): boolean => {
-    try {
-      if (sessionStorage.getItem(SEEN_KEY)) return true;
-      sessionStorage.setItem(SEEN_KEY, '1');
-    } catch {
-      // Storage blocked: show the intro, it is short and skippable.
-    }
-    return false;
-  };
-
-  if (intro && film) {
-    if (seenThisSession()) {
+  if (intro && film && enter) {
+    if (!root.classList.contains('has-intro')) {
       intro.remove();
     } else {
-      const finish = () => {
-        intro.classList.add('is-done');
-        intro.addEventListener('animationend', () => intro.remove(), { once: true });
-      };
-      film.addEventListener('ended', finish, { once: true });
-      film.addEventListener('error', finish, { once: true });
-      // Any sign of intent ends it early: nobody should wait for a loading screen.
-      for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart'] as const) {
-        window.addEventListener(type, finish, { once: true, passive: true });
+      // Everything behind the entry screen is out of reach until the visitor enters.
+      const behind = [...document.body.children].filter((el) => el !== intro) as HTMLElement[];
+      behind.forEach((el) => (el.inert = true));
+      enter.focus({ preventScroll: true });
+
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        // Still frame: the final pose, no motion.
+        film.addEventListener('loadedmetadata', () => (film.currentTime = film.duration), { once: true });
+      } else {
+        film.play().catch(() => {
+          // Autoplay refused (power saving): the poster stays, the button still works.
+        });
       }
+
+      const open = () => {
+        try {
+          sessionStorage.setItem(SEEN_KEY, '1');
+        } catch {
+          // Storage blocked: the intro will show again next time, nothing else breaks.
+        }
+        behind.forEach((el) => (el.inert = false));
+        intro.classList.add('is-leaving');
+        // The title and button animations bubble up too: wait for the screen's own fade-out.
+        const onEnd = (e: AnimationEvent) => {
+          if (e.target !== intro) return;
+          intro.removeEventListener('animationend', onEnd);
+          root.classList.remove('has-intro');
+          intro.remove();
+        };
+        intro.addEventListener('animationend', onEnd);
+        document.getElementById('contenu')?.focus({ preventScroll: true });
+      };
+      enter.addEventListener('click', open, { once: true });
+      intro.addEventListener('keydown', (e) => e.key === 'Escape' && open());
     }
   }
 </script>
 
 <style>
   .intro {
+    display: none;
+  }
+
+  :global(html.has-intro) .intro {
     position: fixed;
     inset: 0;
     z-index: 100;
     display: grid;
     place-content: center;
     justify-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
+    padding: var(--gutter);
     background: var(--paper);
-    pointer-events: none;
-    /* Safety net without JS (or if autoplay is refused): the film lasts 3 s. */
-    animation: intro-out 500ms var(--ease) 3.4s forwards;
   }
 
-  .intro.is-done {
-    animation: intro-out 500ms var(--ease) forwards;
+  :global(html.has-intro body) {
+    overflow: hidden;
+  }
+
+  .intro.is-leaving {
+    animation: intro-out 600ms var(--ease) forwards;
   }
 
   @keyframes intro-out {
@@ -82,10 +108,10 @@
   }
 
   .intro__film {
-    width: min(70vmin, 40rem);
+    width: min(62vmin, 36rem);
     height: auto;
     aspect-ratio: 1;
-    /* The film background is the page paper; the soft edge hides any colour drift from video encoding. */
+    /* The film background is the page paper; the soft edge hides any drift from video encoding. */
     mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
   }
 
@@ -100,7 +126,7 @@
   }
 
   .intro__dim {
-    width: min(70vmin, 40rem);
+    width: min(62vmin, 36rem);
     animation: intro-in 700ms var(--ease) 600ms both;
   }
 
@@ -108,16 +134,17 @@
     color: var(--ink-soft);
   }
 
+  /* The button arrives as the lamp settles into its pose. */
+  .intro__enter {
+    margin-top: 0.75rem;
+    min-width: 16rem;
+    animation: intro-in 700ms var(--ease) 2.2s both;
+  }
+
   @keyframes intro-in {
     from {
       opacity: 0;
       transform: translateY(0.5rem);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .intro {
-      display: none;
     }
   }
 </style>

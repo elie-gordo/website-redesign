@@ -26,7 +26,10 @@ async function save(image, name) {
 async function open(context, path, cart = []) {
   const page = await context.newPage();
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.addInitScript((items) => localStorage.setItem('tensil-cart-v1', JSON.stringify(items)), cart);
+  await page.addInitScript((items) => {
+    localStorage.setItem('tensil-cart-v1', JSON.stringify(items));
+    sessionStorage.setItem('tensil-intro-seen', '1');
+  }, cart);
   await page.goto(BASE + path, { waitUntil: 'networkidle' });
   await page.evaluate(async () => {
     document.querySelectorAll('img[loading="lazy"]').forEach((img) => (img.loading = 'eager'));
