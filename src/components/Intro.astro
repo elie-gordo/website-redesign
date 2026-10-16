@@ -2,8 +2,8 @@
 // Entry screen of the store: the lamp turns in and lifts its head, then the visitor enters with
 // the button. The film is rendered offline with Remotion from the same GLB (tools/remotion):
 // the browser only plays a 180 KB MP4, no 3D runtime.
-// Shown only when public/intro-gate.js has set html.has-intro (first visit of the session, or
-// ?intro from the header wordmark; JS on).
+// Shown only when public/intro-gate.js has set html.has-intro: every arrival from outside the
+// site, or ?intro from the header wordmark (JS on).
 ---
 
 <div class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" data-intro>
@@ -28,7 +28,6 @@
 </div>
 
 <script>
-  const SEEN_KEY = 'tensil-intro-seen';
   const LEAVE_MS = 600; // matches the intro-out animation below
   const root = document.documentElement;
   const intro = document.querySelector<HTMLElement>('[data-intro]');
@@ -54,11 +53,6 @@
       }
 
       const open = () => {
-        try {
-          sessionStorage.setItem(SEEN_KEY, '1');
-        } catch {
-          // Storage blocked: the intro will show again next time, nothing else breaks.
-        }
         behind.forEach((el) => (el.inert = false));
         // Drop ?intro (header wordmark) so a reload or a shared link opens the site itself.
         const url = new URL(location.href);

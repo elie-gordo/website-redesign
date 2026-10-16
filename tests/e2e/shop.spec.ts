@@ -6,13 +6,13 @@ async function expectNoA11yViolations(page: Page) {
   expect(results.violations.map((v) => `${v.id}: ${v.nodes.length} node(s)`)).toEqual([]);
 }
 
-// The entry screen shows once per session; every test but its own starts past it.
+// The entry screen opens every arrival on the site; every test but its own starts past it.
 test.beforeEach(async ({ page }, testInfo) => {
   if (testInfo.title.startsWith('entry screen')) return;
-  await page.addInitScript(() => sessionStorage.setItem('tensil-intro-seen', '1'));
+  await page.addInitScript(() => sessionStorage.setItem('tensil-intro-skip', '1'));
 });
 
-test('entry screen: the film plays, the button opens the site, then it is not shown again', async ({ page }) => {
+test('entry screen: every arrival opens on it, the button opens the site', async ({ page }) => {
   await page.goto('/');
   const dialog = page.getByRole('dialog', { name: /TENSIL/ });
   await expect(dialog).toBeVisible();
@@ -25,12 +25,17 @@ test('entry screen: the film plays, the button opens the site, then it is not sh
   await expect(dialog).toHaveCount(0);
   await expect(page.locator('main')).toHaveJSProperty('inert', false);
   await expect(page.getByRole('button', { name: /Ajouter au panier/ })).toBeVisible();
-  await page.reload();
+  // Coming back from another page of the site: straight to the store.
+  await page.goto('/panier');
+  await Promise.all([page.waitForURL(/\/$/), page.evaluate(() => (location.href = '/'))]);
+  await expect(page.getByRole('heading', { name: 'TENSIL', level: 1 })).toBeVisible();
   await expect(page.getByRole('dialog', { name: /TENSIL/ })).toHaveCount(0);
+  // A new arrival (reload counts: the referrer stays external) opens on it again.
+  await page.goto('/');
+  await expect(page.getByRole('dialog', { name: /TENSIL/ })).toBeVisible();
 });
 
 test('entry screen: the header wordmark brings it back', async ({ page }) => {
-  await page.addInitScript(() => sessionStorage.setItem('tensil-intro-seen', '1'));
   await page.goto('/panier');
   await page.getByRole('link', { name: 'TENSIL, page d’entrée' }).click();
   const dialog = page.getByRole('dialog', { name: /TENSIL/ });
