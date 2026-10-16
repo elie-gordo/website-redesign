@@ -41,7 +41,7 @@ const productLd = {
   <ProductStage />
 
   <section class="manifesto section wrap" aria-labelledby="manifesto-title">
-    <p class="eyebrow reveal">Le principe</p>
+    <p class="eyebrow reveal"><b>01</b> Le principe</p>
     <h2 id="manifesto-title" class="h2 reveal">
       Une lampe qui ne lutte pas contre son poids&nbsp;: elle <em>l’équilibre</em>.
     </h2>
@@ -49,6 +49,7 @@ const productLd = {
       Le mécanisme reprend un principe connu depuis les années 1930 : des ressorts tendus compensent le bras. TENSIL le
       réinterprète avec une silhouette propre, une base en disque et une tête conique.
     </p>
+    <p class="dim manifesto__dim reveal">Portée du bras · 60 cm</p>
   </section>
 
   <section id="anatomie" class="anatomy" aria-labelledby="anatomy-title">
@@ -56,8 +57,8 @@ const productLd = {
       <Image src={detail} alt="Gros plan sur une rotule en laiton et les ressorts de TENSIL" widths={[640, 1000, 1600]} sizes="(min-width: 64rem) 55vw, 100vw" />
     </div>
     <div class="anatomy__text wrap">
-      <p class="eyebrow">Anatomie</p>
-      <h2 id="anatomy-title" class="h2">Quatre détails, <em>aucun superflu.</em></h2>
+      <p class="eyebrow"><b>02</b> Anatomie</p>
+      <h2 id="anatomy-title" class="h2">Ce qui la tient <em>en place.</em></h2>
       <ol class="anatomy__list">
         {
           anatomy.map(([n, title, text]) => (
@@ -75,8 +76,8 @@ const productLd = {
   <section class="night" aria-labelledby="night-title">
     <div class="night__grid wrap">
       <div class="night__copy">
-        <p class="eyebrow">À la nuit tombée</p>
-        <h2 id="night-title" class="h2">Une lumière chaude, <em>dirigée là où vous travaillez.</em></h2>
+        <p class="eyebrow"><b>03</b> À la nuit tombée</p>
+        <h2 id="night-title" class="h2">Un cône de lumière, <em>posé sur le plan de travail.</em></h2>
         <p class="lead">
           L’abat-jour concentre la lumière sur le plan de travail. Le studio s’éteint, la lampe reste.
         </p>
@@ -103,8 +104,8 @@ const productLd = {
   <section id="coloris" class="range section" aria-labelledby="range-title">
     <div class="wrap">
       <div class="range__head">
-        <p class="eyebrow">Coloris</p>
-        <h2 id="range-title" class="h2">Quatre laques, <em>un seul dessin.</em></h2>
+        <p class="eyebrow"><b>04</b> Coloris</p>
+        <h2 id="range-title" class="h2">Quatre laques <em>au choix.</em></h2>
       </div>
       <ul class="range__list">
         {
@@ -113,6 +114,7 @@ const productLd = {
               <button type="button" class="range__btn" data-pick-colorway={c.id}>
                 <Image src={profileOf(c.id)} alt="" widths={[400, 700]} sizes="(min-width: 64rem) 25vw, 50vw" />
                 <span class="range__name">{c.name}</span>
+                <span class="range__ref numeral">Réf. TNS-{c.id.slice(0, 3).toUpperCase()} · {c.hex.toUpperCase()}</span>
                 <span class="range__cta">Voir en 3D<span class="visually-hidden"> le coloris {c.name}</span></span>
               </button>
             </li>
@@ -144,19 +146,30 @@ const productLd = {
 
 <style>
   /* ---------------------------------------------------------------- manifesto */
+  /* Asymmetric: title on the left two thirds, the explanation drops into the last column. */
   .manifesto {
     display: grid;
-    gap: 2rem;
-    justify-items: center;
-    text-align: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem var(--gutter);
+    align-items: end;
+  }
+
+  .manifesto .eyebrow {
+    grid-column: 1 / -1;
   }
 
   .manifesto .h2 {
-    max-width: 18ch;
+    grid-column: 1 / 3;
+    max-width: 16ch;
   }
 
   .manifesto .lead {
-    text-align: center;
+    grid-column: 3;
+  }
+
+  .manifesto__dim {
+    grid-column: 1 / -1;
+    margin-top: 2rem;
   }
 
   /* ---------------------------------------------------------------- anatomy */
@@ -201,19 +214,22 @@ const productLd = {
     border-top: 1px solid var(--line);
   }
 
+  /* Callout balloon, as on an assembly drawing. */
   .anatomy__num {
     grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--signal);
+    border-radius: 50%;
     font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    color: var(--brass);
-    padding-top: 0.35rem;
+    color: var(--signal);
   }
 
   .anatomy__list h3 {
-    font-size: var(--t-small);
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: var(--t-body);
+    font-weight: 600;
   }
 
   .anatomy__list p {
@@ -232,6 +248,10 @@ const productLd = {
   .night .lead,
   .night__caption {
     color: var(--night-soft);
+  }
+
+  .night .eyebrow b {
+    color: var(--signal-bright);
   }
 
   .night__grid {
@@ -274,8 +294,8 @@ const productLd = {
 
   .night__caption {
     font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0;
   }
 
   /* ---------------------------------------------------------------- range */
@@ -329,20 +349,30 @@ const productLd = {
 
   .range__name {
     padding-inline: 1.5rem;
-    font-family: var(--serif);
+    font-family: var(--display);
+    font-stretch: var(--condensed);
+    font-weight: 650;
     font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .range__ref {
+    padding-inline: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: var(--t-micro);
+    color: var(--ink-soft);
   }
 
   .range__cta {
     padding-inline: 1.5rem;
     font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0;
     color: var(--ink-soft);
   }
 
   .range__btn:hover .range__cta {
-    color: var(--brass);
+    color: var(--signal);
   }
 
   /* ---------------------------------------------------------------- faq */
@@ -367,8 +397,10 @@ const productLd = {
     padding-block: 1.5rem;
     cursor: pointer;
     list-style: none;
-    font-family: var(--serif);
-    font-size: 1.5rem;
+    font-family: var(--display);
+    font-stretch: 85%;
+    font-weight: 600;
+    font-size: 1.375rem;
     line-height: 1.2;
   }
 
@@ -407,8 +439,14 @@ const productLd = {
   @media (max-width: 64rem) {
     .anatomy,
     .night__grid,
-    .faq {
+    .faq,
+    .manifesto {
       grid-template-columns: 1fr;
+    }
+
+    .manifesto .h2,
+    .manifesto .lead {
+      grid-column: 1;
     }
 
     .anatomy__image {

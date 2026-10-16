@@ -98,13 +98,13 @@ const swatches = Object.fromEntries(COLORWAYS.map((c) => [c.id, { name: c.name, 
     background: none;
     padding: 0.5rem 0;
     font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0;
     cursor: pointer;
   }
 
   .drawer__close:hover {
-    color: var(--brass);
+    color: var(--signal);
   }
 
   .drawer__notice:empty {
@@ -114,7 +114,7 @@ const swatches = Object.fromEntries(COLORWAYS.map((c) => [c.id, { name: c.name, 
   .drawer__notice {
     margin: 1rem 1.5rem 0;
     padding: 0.75rem 1rem;
-    border-left: 2px solid var(--brass-bright);
+    border-left: 2px solid var(--signal-bright);
     background: var(--paper);
     font-size: var(--t-small);
   }
@@ -186,13 +186,11 @@ const swatches = Object.fromEntries(COLORWAYS.map((c) => [c.id, { name: c.name, 
 
   .cart-line__title {
     font-size: var(--t-small);
-    font-weight: 500;
-    letter-spacing: 0.16em;
+    font-weight: 600;
   }
 
   .cart-line__colorway {
     font-weight: 400;
-    letter-spacing: 0.04em;
     color: var(--ink-soft);
   }
 
@@ -208,8 +206,8 @@ const swatches = Object.fromEntries(COLORWAYS.map((c) => [c.id, { name: c.name, 
     background: none;
     padding: 0.25rem 0;
     font-size: var(--t-micro);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0;
     color: var(--ink-soft);
     text-decoration: underline;
     text-underline-offset: 0.3em;

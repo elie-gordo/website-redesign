@@ -1,8 +1,8 @@
 /* TENSIL — design tokens and base styles.
-   Direction: quiet gallery. Warm paper, ink, hairlines; brass is reserved for interaction. */
-@import '@fontsource-variable/inter/wght.css';
-@import '@fontsource/instrument-serif/400.css';
-@import '@fontsource/instrument-serif/400-italic.css';
+   Direction: engineer's data sheet. Drafting paper, ink, hairlines, dimension lines;
+   oxide red (the Oxyde lacquer) marks what you can act on, like a correction pencil. */
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/azeret-mono/wght.css';
 
 :root {
   color-scheme: light;
@@ -14,17 +14,22 @@
   --ink-soft: #57534c;
   --line: rgb(23 22 20 / 0.14);
   --line-strong: rgb(23 22 20 / 0.32);
-  --brass: #7d5e36;
-  --brass-bright: #b8915c;
+  --signal: #a8432a;
+  --signal-bright: #e0714f;
   --night: #0f0e0d;
   --night-ink: #ece6dc;
   --night-soft: #a49c90;
   --error: #9b2c1f;
+  --grid-minor: rgb(23 22 20 / 0.045);
+  --grid-major: rgb(23 22 20 / 0.08);
 
-  --serif: 'Instrument Serif', 'Times New Roman', serif;
-  --sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* One grotesque on its width axis: condensed for titles, normal for text. Mono for references and figures. */
+  --display: 'Archivo Variable', 'Arial Narrow', sans-serif;
+  --sans: 'Archivo Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Azeret Mono Variable', ui-monospace, 'Cascadia Mono', monospace;
+  --condensed: 72%;
 
-  --t-micro: 0.6875rem;
+  --t-micro: 0.75rem;
   --t-small: 0.8125rem;
   --t-body: 1rem;
   --t-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
@@ -62,7 +67,8 @@ body {
   font-family: var(--sans);
   font-size: var(--t-body);
   line-height: 1.6;
-  font-feature-settings: 'ss01', 'cv11';
+  /* Azeret draws "fi" as a ligature that looks broken in a monospace. */
+  font-variant-ligatures: no-common-ligatures;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -101,7 +107,7 @@ select {
 }
 
 :focus-visible {
-  outline: 2px solid var(--brass-bright);
+  outline: 2px solid var(--signal);
   outline-offset: 3px;
 }
 
@@ -110,42 +116,63 @@ select {
   color: var(--paper);
 }
 
-/* ---------------------------------------------------------------- type roles */
-.display {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: var(--t-display);
-  line-height: 0.92;
-  letter-spacing: -0.02em;
+/* ---------------------------------------------------------------- type roles
+   Emphasis inside titles is a weight drop, not an italic: <em> reads lighter, like a secondary line on a drawing. */
+.display,
+.h2,
+.h3 {
+  font-family: var(--display);
+  font-stretch: var(--condensed);
+  font-weight: 700;
 }
 
-.h2 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: var(--t-h2);
-  line-height: 1;
+.display {
+  font-size: var(--t-display);
+  line-height: 0.86;
   letter-spacing: -0.015em;
 }
 
+.h2 {
+  font-size: var(--t-h2);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
 .h3 {
-  font-family: var(--serif);
-  font-weight: 400;
   font-size: var(--t-h3);
-  line-height: 1.1;
+  line-height: 1.05;
+  font-weight: 650;
 }
 
 .h2 em,
 .h3 em,
 .display em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 300;
 }
 
+/* Section label: a mono reference, sentence case, with a short leader rule. */
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  font-family: var(--mono);
   font-size: var(--t-micro);
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-weight: 450;
+  letter-spacing: 0;
   color: var(--ink-soft);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.eyebrow b {
+  font-weight: 450;
+  color: var(--signal);
 }
 
 .lead {
@@ -156,8 +183,40 @@ select {
 }
 
 .numeral {
+  font-family: var(--mono);
   font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum';
+  letter-spacing: -0.02em;
+}
+
+/* Drafting grid: 5 mm minor, 25 mm major, as on engineering paper. */
+.drafting {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 5rem 5rem, 5rem 5rem, 1rem 1rem, 1rem 1rem;
+  background-position: -1px -1px;
+}
+
+/* Dimension line ("cote"): |<—— 22 cm ——>| */
+.dim {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--t-micro);
+  color: var(--signal);
+}
+
+.dim::before,
+.dim::after {
+  content: '';
+  flex: 1;
+  height: 0.6rem;
+  border-inline: 1px solid currentColor;
+  background: linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat;
 }
 
 /* ---------------------------------------------------------------- layout */
@@ -196,48 +255,38 @@ select {
   top: 0.5rem;
 }
 
-/* ---------------------------------------------------------------- buttons */
+/* ---------------------------------------------------------------- buttons
+   Square, solid, sentence case. Hover turns the button oxide and nudges the trailing mark. */
 .btn {
   --btn-bg: var(--ink);
   --btn-fg: var(--paper);
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
   min-height: 3.5rem;
-  padding: 0 1.5rem;
+  padding: 0 1.25rem;
   border: 1px solid var(--btn-bg);
   background: var(--btn-bg);
   color: var(--btn-fg);
-  font-size: var(--t-small);
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  overflow: hidden;
-  isolation: isolate;
-  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+  transition: background-color var(--fast) var(--ease), border-color var(--fast) var(--ease);
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--brass);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 420ms var(--ease);
-}
-
-.btn:hover::before {
-  transform: scaleX(1);
+.btn > :last-child {
+  transition: transform var(--fast) var(--ease);
 }
 
 .btn:hover {
-  border-color: var(--brass);
+  --btn-bg: var(--signal);
+}
+
+.btn:hover > :last-child:not(:first-child) {
+  transform: translateX(0.2rem);
 }
 
 .btn:active {
@@ -246,12 +295,9 @@ select {
 
 .btn[disabled],
 .btn[aria-disabled='true'] {
+  --btn-bg: var(--ink);
   opacity: 0.45;
   cursor: not-allowed;
-}
-
-.btn[disabled]::before {
-  display: none;
 }
 
 .btn--block {
@@ -259,9 +305,8 @@ select {
 }
 
 .link {
+  font-family: var(--mono);
   font-size: var(--t-small);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   text-decoration: none;
   background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
   padding-bottom: 0.2em;

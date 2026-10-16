@@ -90,8 +90,8 @@ const canonical = Astro.site ? new URL(cleanPath, Astro.site).href : undefined;
     background: var(--ink);
     color: var(--paper);
     font-size: var(--t-micro);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -102,10 +102,6 @@ const canonical = Astro.site ? new URL(cleanPath, Astro.site).href : undefined;
   }
 
   @media (max-width: 40rem) {
-    .demo-banner {
-      letter-spacing: 0.12em;
-    }
-
     .demo-banner__long {
       display: none;
     }
