@@ -171,12 +171,6 @@ select {
   padding-block: var(--section);
 }
 
-.rule {
-  border: 0;
-  border-top: 1px solid var(--line);
-  margin: 0;
-}
-
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -258,16 +252,6 @@ select {
 
 .btn[disabled]::before {
   display: none;
-}
-
-.btn--ghost {
-  --btn-bg: transparent;
-  --btn-fg: var(--ink);
-  border-color: var(--line-strong);
-}
-
-.btn--ghost:hover {
-  color: var(--paper);
 }
 
 .btn--block {
