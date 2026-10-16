@@ -30,7 +30,8 @@ Un objet design s'achète mal sur photo. La boutique répond avec une visionneus
 ## Pages et fonctions
 | Page | Contenu |
 |---|---|
-| Produit (accueil) | Héros, visionneuse 3D 360° + sélecteur de coloris, galerie, caractéristiques, FAQ |
+| Entrée (`/`) | Film d'ouverture (lampe animée, rendu Remotion depuis le modèle 3D) et lien vers la lampe |
+| Produit (`/lampe`) | Héros, visionneuse 3D 360° + sélecteur de coloris, galerie, caractéristiques, FAQ |
 
 > Mise à jour 2026-10-16 : la section « Savoir-faire » (visuels du processus Blender) a été retirée à ta demande ; l'anatomie utilise un gros plan dédié.
 | Panier | Quantités, sous-total, livraison fictive, état vide |

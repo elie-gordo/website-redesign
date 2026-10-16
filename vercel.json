@@ -5,6 +5,9 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/", "has": [{ "type": "query", "key": "coloris" }], "destination": "/lampe", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

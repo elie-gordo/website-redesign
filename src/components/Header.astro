@@ -1,7 +1,7 @@
 ---
 const path = Astro.url.pathname;
-const onProduct = path === '/' || path === '/index';
-const anchor = (id: string) => (onProduct ? `#${id}` : `/#${id}`);
+const onProduct = path.replace(/\.html$/, '') === '/lampe';
+const anchor = (id: string) => (onProduct ? `#${id}` : `/lampe#${id}`);
 ---
 
 <header class="header">
@@ -11,7 +11,7 @@ const anchor = (id: string) => (onProduct ? `#${id}` : `/#${id}`);
       <a href={anchor('anatomie')}>Anatomie</a>
       <a href={anchor('coloris')}>Coloris</a>
     </nav>
-    <a class="wordmark" href="/?intro" aria-label="TENSIL, page d’entrée">TENSIL</a>
+    <a class="wordmark" href="/" aria-label="TENSIL, accueil">TENSIL</a>
     <div class="header__end">
       <a class="header__about" href="/a-propos">La démo</a>
       <button class="cart-toggle" type="button" data-cart-open aria-haspopup="dialog">

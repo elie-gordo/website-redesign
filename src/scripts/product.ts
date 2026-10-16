@@ -223,9 +223,6 @@ export function initProduct(): void {
   }
   const INTENT_EVENTS = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'wheel'] as const;
   const onIntent = () => {
-    // Input while the entry screen is up is about entering, not the 3D view: loading three.js
-    // then would only stutter the screen's fade-out.
-    if (document.documentElement.classList.contains('has-intro')) return;
     INTENT_EVENTS.forEach((type) => window.removeEventListener(type, onIntent));
     void startViewer();
   };

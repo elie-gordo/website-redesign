@@ -26,10 +26,7 @@ async function save(image, name) {
 async function open(context, path, cart = []) {
   const page = await context.newPage();
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.addInitScript((items) => {
-    localStorage.setItem('tensil-cart-v1', JSON.stringify(items));
-    sessionStorage.setItem('tensil-intro-skip', '1');
-  }, cart);
+  await page.addInitScript((items) => localStorage.setItem('tensil-cart-v1', JSON.stringify(items)), cart);
   await page.goto(BASE + path, { waitUntil: 'networkidle' });
   await page.evaluate(async () => {
     document.querySelectorAll('img[loading="lazy"]').forEach((img) => (img.loading = 'eager'));
@@ -170,17 +167,17 @@ async function fillInvalidCheckout(page) {
 async function desktop(browser) {
   const ctx = await browser.newContext(DESKTOP);
 
-  let page = await open(ctx, '/');
+  let page = await open(ctx, '/lampe');
   await show3d(page);
   await save(await page.screenshot(), '01-produit');
   await page.close();
 
-  page = await open(ctx, '/?coloris=oxyde');
+  page = await open(ctx, '/lampe?coloris=oxyde');
   await show3d(page, { turns: -4 });
   await save(await page.screenshot(), '02-produit-oxyde');
   await page.close();
 
-  page = await open(ctx, '/');
+  page = await open(ctx, '/lampe');
   await frame(page, '.night', '04-nuit');
   await frame(page, '#coloris', '05-coloris');
   await page.close();
@@ -206,14 +203,14 @@ async function mobile(browser) {
   const ctx = await browser.newContext(MOBILE);
   const screens = [];
 
-  let page = await open(ctx, '/?coloris=sauge');
+  let page = await open(ctx, '/lampe?coloris=sauge');
   await show3d(page);
   // Small range only: the 3D stage must stay in the screen.
   await scrollToCleanEdge(page, 0, 140);
   screens.push(await page.screenshot());
   await page.close();
 
-  page = await open(ctx, '/?coloris=sauge', [{ colorway: 'graphite', qty: 1 }]);
+  page = await open(ctx, '/lampe?coloris=sauge', [{ colorway: 'graphite', qty: 1 }]);
   await page.getByRole('button', { name: /Ajouter au panier/ }).click();
   await page.getByRole('dialog', { name: 'Votre panier' }).waitFor();
   await page.waitForTimeout(700);

@@ -16,7 +16,8 @@ Boutique e-commerce mono-produit pour la lampe articulée TENSIL, modélisée da
 ## 3. Pages et fonctionnalités
 | Page | Contenu |
 |---|---|
-| `/` Produit | Photo studio du coloris choisi, vue 3D 360° chargée à la demande (souris, toucher, clavier), 4 coloris (URL partageable `?coloris=sauge`), ajout au panier, caractéristiques, anatomie (gros plan), film de 8 s, galerie des coloris, FAQ, barre d'achat fixe sur mobile |
+| `/` Entrée | Film de 3 s rendu avec Remotion depuis le modèle 3D (MP4 de 180 Ko, aucun moteur 3D dans le navigateur), lien vers la lampe ; le logo du header y ramène |
+| `/lampe` Produit | Photo studio du coloris choisi, vue 3D 360° chargée à la demande (souris, toucher, clavier), 4 coloris (URL partageable `/lampe?coloris=sauge`), ajout au panier, caractéristiques, anatomie (gros plan), film de 8 s, galerie des coloris, FAQ, barre d'achat fixe sur mobile |
 | Tiroir panier | Quantités (1 à 5 par coloris), suppression, sous-total, état vide, message si le stockage est bloqué |
 | `/panier` | Même panier en pleine page, récapitulatif |
 | `/commande` | Formulaire de livraison simulé : validation champ par champ, résumé d'erreurs avec liens, envoi simulé, aucun champ bancaire |

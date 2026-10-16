@@ -8,9 +8,11 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Entry page: demo banner and page content only, no header, footer or cart. */
+  bare?: boolean;
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, bare = false } = Astro.props;
 const fullTitle = title === 'TENSIL' ? 'TENSIL — Lampe de bureau articulée (démo)' : `${title} — TENSIL`;
 const ogImage = Astro.site ? new URL('/og.webp', Astro.site).href : '/og.webp';
 // build.format 'file' yields /index.html, /panier.html; the host serves clean URLs (/ and /panier).
@@ -41,18 +43,17 @@ const canonical = Astro.site ? new URL(cleanPath, Astro.site).href : undefined;
     <slot name="head" />
   </head>
   <body>
-    <slot name="before" />
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <p class="demo-banner">
       <span class="demo-banner__long">Projet de démonstration <span aria-hidden="true">·</span> </span>Marque fictive
       <span aria-hidden="true">·</span> Aucune vente réelle
     </p>
-    <Header />
+    {!bare && <Header />}
     <main id="contenu" tabindex="-1">
       <slot />
     </main>
-    <Footer />
-    <CartDrawer />
+    {!bare && <Footer />}
+    {!bare && <CartDrawer />}
     <script>
       import { initCartUi } from '../scripts/cart-ui';
 
