@@ -2,7 +2,8 @@
 // Entry screen of the store: the lamp turns in and lifts its head, then the visitor enters with
 // the button. The film is rendered offline with Remotion from the same GLB (tools/remotion):
 // the browser only plays a 180 KB MP4, no 3D runtime.
-// Shown only when public/intro-gate.js has set html.has-intro (first visit of the session, JS on).
+// Shown only when public/intro-gate.js has set html.has-intro (first visit of the session, or
+// ?intro from the header wordmark; JS on).
 ---
 
 <div class="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title" data-intro>
@@ -28,6 +29,7 @@
 
 <script>
   const SEEN_KEY = 'tensil-intro-seen';
+  const LEAVE_MS = 600; // matches the intro-out animation below
   const root = document.documentElement;
   const intro = document.querySelector<HTMLElement>('[data-intro]');
   const film = document.querySelector<HTMLVideoElement>('[data-intro-film]');
@@ -58,15 +60,19 @@
           // Storage blocked: the intro will show again next time, nothing else breaks.
         }
         behind.forEach((el) => (el.inert = false));
+        // Drop ?intro (header wordmark) so a reload or a shared link opens the site itself.
+        const url = new URL(location.href);
+        if (url.searchParams.has('intro')) {
+          url.searchParams.delete('intro');
+          history.replaceState(history.state, '', url);
+        }
         intro.classList.add('is-leaving');
-        // The title and button animations bubble up too: wait for the screen's own fade-out.
-        const onEnd = (e: AnimationEvent) => {
-          if (e.target !== intro) return;
-          intro.removeEventListener('animationend', onEnd);
+        // Remove after the fade. A timer rather than animationend: child animations bubble up,
+        // and animations do not run at all in a background tab.
+        setTimeout(() => {
           root.classList.remove('has-intro');
           intro.remove();
-        };
-        intro.addEventListener('animationend', onEnd);
+        }, LEAVE_MS);
         document.getElementById('contenu')?.focus({ preventScroll: true });
       };
       enter.addEventListener('click', open, { once: true });

@@ -18,12 +18,28 @@ test('entry screen: the film plays, the button opens the site, then it is not sh
   await expect(dialog).toBeVisible();
   // The site behind is inert until the visitor enters.
   await expect(page.locator('main')).toHaveJSProperty('inert', true);
-  await dialog.getByRole('button', { name: /Découvrir la lampe/ }).click();
+  // The button fades in as the lamp settles: click it once a visitor could see it.
+  const enter = dialog.getByRole('button', { name: /Découvrir la lampe/ });
+  await expect(enter).toHaveCSS('opacity', '1');
+  await enter.click();
   await expect(dialog).toHaveCount(0);
   await expect(page.locator('main')).toHaveJSProperty('inert', false);
   await expect(page.getByRole('button', { name: /Ajouter au panier/ })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('dialog', { name: /TENSIL/ })).toHaveCount(0);
+});
+
+test('entry screen: the header wordmark brings it back', async ({ page }) => {
+  await page.addInitScript(() => sessionStorage.setItem('tensil-intro-seen', '1'));
+  await page.goto('/panier');
+  await page.getByRole('link', { name: 'TENSIL, page d’entrée' }).click();
+  const dialog = page.getByRole('dialog', { name: /TENSIL/ });
+  await expect(dialog).toBeVisible();
+  const enter = dialog.getByRole('button', { name: /Découvrir la lampe/ });
+  await expect(enter).toHaveCSS('opacity', '1');
+  await enter.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test('entry screen: no intro outside the home page', async ({ page }) => {
