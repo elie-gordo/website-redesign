@@ -27,7 +27,7 @@
   },
   "scripts": {
     "dev": "remotion studio",
-    "render": "remotion render Intro ../../public/media/intro.mp4 --codec=h264 --crf=26 --color-space=bt709 --gl=angle && remotion still Intro ../../public/media/intro-poster.jpg --frame=0 --image-format=jpeg --jpeg-quality=82 --gl=angle",
+    "render": "remotion render Intro ../../public/media/intro.mp4 --codec=h264 --crf=26 --color-space=bt709 --gl=angle && remotion render Intro720 ../../public/media/intro-720.mp4 --codec=h264 --crf=27 --color-space=bt709 --gl=angle && remotion still Intro ../../public/media/intro-poster.jpg --frame=0 --image-format=jpeg --jpeg-quality=82 --gl=angle",
     "lint": "eslint src && tsc"
   },
   "allowScripts": {

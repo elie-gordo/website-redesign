@@ -97,16 +97,18 @@ Voir [docs/CREDITS.md](docs/CREDITS.md). Aucune image, texture ou police tierce 
 |---|---|---|
 | `astro check` | 0 erreur, 0 avertissement | |
 | Tests unitaires (Vitest) | 14/14 | panier, commande, couleurs |
-| E2E Playwright | 26/26, deux exécutions consécutives | 13 scénarios × Chrome desktop 1440 px et Pixel 7 |
-| axe (WCAG 2.1 A/AA) | 0 violation détectée | `/`, `/panier`, `/commande`, `/a-propos`, `/404` |
+| E2E Playwright | 32/32 | 16 scénarios × Chrome desktop 1440 px et Pixel 7 |
+| axe (WCAG 2.1 A/AA) | 0 violation détectée | `/`, `/lampe`, `/panier`, `/commande`, `/a-propos`, `/404` |
 | Débordement horizontal | Aucun | 4 pages, desktop et mobile |
-| Lighthouse mobile, page produit | Performance 99, Accessibilité 100, Bonnes pratiques 100, SEO 100 | Lighthouse 12, aperçu local, throttling simulé ; LCP 1,9 s, TBT 0 ms, CLS 0,006, 161 Kio transférés |
+| Lighthouse mobile, entrée `/` | Performance 100, Accessibilité 100, Bonnes pratiques 100, SEO 100 | Lighthouse 12.8, aperçu local, throttling simulé ; LCP 1,8 s, TBT 0 ms, CLS 0, 212 Kio (film 720 px compris) |
+| Lighthouse mobile, produit `/lampe` | Performance 99, Accessibilité 100, Bonnes pratiques 100, SEO 100 | LCP 2,0 s, TBT 0 ms, CLS 0,002, 206 Kio ; vue 3D (~360 Kio) chargée seulement au premier geste |
+| Lighthouse mobile, autres pages | Performance 100, Accessibilité 100, Bonnes pratiques 100 | `/panier`, `/commande`, `/confirmation`, `/a-propos` : CLS 0, 83 à 86 Kio ; SEO 60 attendu sur les pages `noindex` |
 | GLB | `gltf-transform validate` : 0 erreur | rendu de contrôle des 4 angles dans Blender |
 | Contrôle visuel | desktop 1440 px et mobile 390 px | Chrome |
 | Production (Vercel) | 7 routes OK (dont 404), en-têtes de sécurité présents, vue 3D fonctionnelle sous CSP stricte sans erreur console | 2026-10-16 |
 | E2E + axe sur la production | 26/26 ; axe 30/30 sur 3 répétitions | `BASE_URL=https://tensil-store.vercel.app` |
 
-**Non vérifié** : Firefox et Safari, appareils physiques, lecteur d'écran (test manuel), Lighthouse sur les pages autres que `/` et sur l'URL de production.
+**Non vérifié** : Firefox et Safari, appareils physiques, lecteur d'écran (test manuel), Lighthouse sur l'URL de production.
 
 ## 9. Limites connues
 - Prix, livraison, retours et commandes **fictifs**.

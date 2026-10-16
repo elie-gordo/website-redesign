@@ -1,10 +1,69 @@
 /* TENSIL — design tokens and base styles.
    Direction: engineer's data sheet. Drafting paper, ink, hairlines, dimension lines;
    oxide red (the Oxyde lacquer) marks what you can act on, like a correction pencil. */
-@import '@fontsource-variable/archivo/wdth.css';
-@import '@fontsource-variable/azeret-mono/wght.css';
-/* Inter only draws the wordmark: it is the face engraved on the lamp base (Blender's default text font). */
-@import '@fontsource-variable/inter/wght.css';
+/* Fonts trimmed to what the design uses by tools/fonts/build_fonts.py (Latin, limited axes). */
+@font-face {
+  font-family: 'Archivo Variable';
+  src: url('../fonts/archivo.woff2') format('woff2');
+  font-weight: 300 700;
+  font-stretch: 72% 100%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Azeret Mono Variable';
+  src: url('../fonts/azeret-mono.woff2') format('woff2');
+  font-weight: 400 500;
+  font-display: swap;
+}
+
+/* Metric-matched fallbacks: until the web fonts arrive, system text takes the same room, so the
+   swap does not move the page (CLS). Ratios measured against the trimmed fonts in Chromium. */
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial');
+  size-adjust: 98.3%;
+  ascent-override: 89.3%;
+  descent-override: 21.4%;
+  line-gap-override: 0%;
+}
+
+/* Titles are condensed (72 %) and bold: a plain Arial would be a third wider. */
+@font-face {
+  font-family: 'Archivo Condensed Fallback';
+  src: local('Arial Bold'), local('Arial');
+  size-adjust: 75.6%;
+  ascent-override: 116.1%;
+  descent-override: 27.8%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Azeret Fallback';
+  src: local('Consolas');
+  size-adjust: 118.2%;
+  ascent-override: 79.3%;
+  descent-override: 19.5%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Azeret Fallback Courier';
+  src: local('Courier New');
+  size-adjust: 108.3%;
+  ascent-override: 86.5%;
+  descent-override: 21.2%;
+  line-gap-override: 0%;
+}
+
+/* Inter only draws the wordmark: it is the face engraved on the lamp base (Blender's default
+   text font), so the file holds just the letters of TENSIL. */
+@font-face {
+  font-family: 'Inter Variable';
+  src: url('../fonts/inter-wordmark.woff2') format('woff2');
+  font-weight: 300 500;
+  font-display: swap;
+}
 
 :root {
   color-scheme: light;
@@ -26,9 +85,9 @@
   --grid-major: rgb(23 22 20 / 0.08);
 
   /* One grotesque on its width axis: condensed for titles, normal for text. Mono for references and figures. */
-  --display: 'Archivo Variable', 'Arial Narrow', sans-serif;
-  --sans: 'Archivo Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'Azeret Mono Variable', ui-monospace, 'Cascadia Mono', monospace;
+  --display: 'Archivo Variable', 'Archivo Condensed Fallback', 'Arial Narrow', sans-serif;
+  --sans: 'Archivo Variable', 'Archivo Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Azeret Mono Variable', 'Azeret Fallback', 'Azeret Fallback Courier', ui-monospace, monospace;
   --condensed: 72%;
   --logo: 'Inter Variable', system-ui, sans-serif;
 

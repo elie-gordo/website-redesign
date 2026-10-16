@@ -1,13 +1,12 @@
 ---
 // Entry page content: the lamp turns in and lifts its head, then the visitor goes to the store.
 // The film is rendered offline with Remotion from the same GLB (tools/remotion): the browser
-// only plays a 180 KB MP4, no 3D runtime.
+// only plays an MP4 (180 KB, 94 KB on phones), no 3D runtime.
 ---
 
 <section class="intro" aria-labelledby="intro-title">
   <video
     class="intro__film"
-    src="/media/intro.mp4"
     poster="/media/intro-poster.jpg"
     width="1080"
     height="1080"
@@ -16,7 +15,11 @@
     preload="auto"
     disablepictureinpicture
     aria-hidden="true"
-    data-intro-film></video>
+    data-intro-film>
+    <!-- Phones show the film at ~250 CSS px: the 720 px render is enough and half the weight. -->
+    <source src="/media/intro-720.mp4" type="video/mp4" media="(max-width: 40rem)" />
+    <source src="/media/intro.mp4" type="video/mp4" />
+  </video>
   <h1 id="intro-title" class="intro__mark">TENSIL</h1>
   <p class="intro__dim dim"><span>Lampe de bureau articulée</span></p>
   <a class="btn intro__enter" href="/lampe">

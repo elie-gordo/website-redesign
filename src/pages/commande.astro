@@ -94,6 +94,9 @@ const fields = [
 <style>
   .checkout {
     padding-block: clamp(3rem, 8vw, 7rem) var(--section);
+    /* The script swaps the form for the empty state when there is no cart: at least one screen
+       tall, the footer stays below the fold either way and nothing visible moves. */
+    min-height: calc(100svh - var(--banner-h) - var(--header-h));
   }
 
   .checkout__head {
