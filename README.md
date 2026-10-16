@@ -56,7 +56,7 @@ BASE_URL=https://tensil-store.vercel.app npm run test:e2e   # mêmes tests sur l
 npm run screenshots  # captures du portfolio dans docs/screenshots/ (`npm run preview` avant)
 ```
 
-Les captures sont cadrées sur les limites réelles des sections (et non au défilement), en `prefers-reduced-motion` pour un rendu identique à chaque exécution : desktop 1440 px ×2, mobile iPhone 13 ×3.
+Toutes les captures sont en **16:9 (2880×1620)**, en `prefers-reduced-motion` pour un rendu identique à chaque exécution : fenêtre 1920×1080 ×1,5, sections cadrées sur leurs limites réelles (une section plus courte que le cadre est complétée par sa propre couleur de fond), position de défilement choisie pour qu'aucun bord ne coupe un texte. Les écrans mobiles (iPhone 13) sont réunis côte à côte sur une planche 16:9.
 
 ### Régénérer les assets 3D (optionnel)
 Nécessite Blender 5.2 et le dépôt `blender-studio-object` cloné à côté de celui-ci. Les scripts du dépôt lampe sont réutilisés **sans modification**.

@@ -2,7 +2,7 @@
 
 - [x] Titre + accroche
 - [x] Visuel de couverture : `docs/screenshots/01-produit.webp`
-- [x] Captures optimisées : `docs/screenshots/*.webp` (Retina, 31 à 108 Ko), régénérables avec `npm run screenshots`
+- [x] Captures optimisées : `docs/screenshots/*.webp`, toutes en 16:9 (2880×1620), régénérables avec `npm run screenshots`
 - [x] Résumé étude de cas : ci-dessous et [CASE_STUDY.md](CASE_STUDY.md)
 - [x] Lien dépôt : https://github.com/elie-gordo/website-redesign
 - [x] Lien démo : https://tensil-store.vercel.app
@@ -40,7 +40,7 @@ Une boutique mono-produit pour une lampe imaginée en 3D : vue à 360° en quatr
 | Galerie | `04-nuit.webp` | Section sombre, rendu allumé |
 | Galerie | `05-coloris.webp` | Les quatre coloris |
 | Galerie | `06-commande-erreurs.webp` | Formulaire, résumé d'erreurs, récapitulatif |
-| Galerie | `07-mobile-produit.webp`, `08-mobile-panier.webp` | Mobile : vue 3D, tiroir panier |
+| Galerie | `07-mobile.webp` | Trois écrans mobiles : vue 3D, tiroir panier, erreurs de commande |
 | Interaction à filmer (optionnel) | — | Changement de coloris sur la 3D en rotation |
 
 ## Contrôle final (prévu vs produit)
