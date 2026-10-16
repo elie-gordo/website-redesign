@@ -46,6 +46,8 @@ export function initCheckout(): void {
   };
   syncEmpty();
   window.addEventListener(CART_EVENT, syncEmpty);
+  // The button ships disabled so an early click can't trigger a native GET submit.
+  form.querySelector<HTMLButtonElement>('[data-submit]')!.disabled = false;
 
   // Re-validate a field once the user leaves it, only if it was already flagged.
   form.addEventListener('focusout', (e) => {

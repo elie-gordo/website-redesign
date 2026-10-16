@@ -65,10 +65,12 @@ const fields = [
           </p>
         </fieldset>
 
-        <button class="btn btn--block" type="submit" data-submit>
+        <!-- Disabled until the script takes over: a native submit would put the fields in the URL. -->
+        <button class="btn btn--block" type="submit" data-submit disabled>
           <span data-submit-label>Valider la commande fictive</span>
           <span class="numeral" data-cart-subtotal>0 €</span>
         </button>
+        <noscript><p class="form__nopay">La commande simulée nécessite JavaScript.</p></noscript>
         <p class="form__status" data-form-status role="status"></p>
       </form>
 
