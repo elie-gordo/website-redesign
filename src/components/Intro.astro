@@ -10,6 +10,7 @@
     poster="/media/intro-poster.jpg"
     width="1080"
     height="1080"
+    autoplay
     muted
     playsinline
     preload="auto"
@@ -29,16 +30,22 @@
 </section>
 
 <script>
+  // The film plays on every arrival, reduced motion included: it runs 3 s once and stops on
+  // its final pose (under the 5 s WCAG 2.2.2 threshold), so it never loops or distracts.
   const film = document.querySelector<HTMLVideoElement>('[data-intro-film]');
   if (film) {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      // Still frame: the final pose, no motion.
-      film.addEventListener('loadedmetadata', () => (film.currentTime = film.duration), { once: true });
-    } else {
+    const start = () => {
+      film.currentTime = 0;
       film.play().catch(() => {
-        // Autoplay refused (power saving): the poster stays, the link still works.
+        // Autoplay refused (power saving): start on the first touch or key, the link still works.
+        const retry = () => film.play().catch(() => {});
+        addEventListener('pointerdown', retry, { once: true });
+        addEventListener('keydown', retry, { once: true });
       });
-    }
+    };
+    start();
+    // Back from the store: the page comes out of the back/forward cache with the film ended.
+    addEventListener('pageshow', (event) => event.persisted && start());
   }
 </script>
 
